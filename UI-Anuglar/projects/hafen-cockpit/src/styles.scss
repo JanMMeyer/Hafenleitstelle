@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+// This enables app root to be "fullscreen".
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+
+.debug {
+  border: 1px solid hotpink;
+  background-color: lightgreen
+}
+
+

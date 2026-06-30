@@ -59,4 +59,3 @@ Separater Refresh und Anzeigen des busy-state von mehreren Unterfunkionen eines 
 Refresh All?
 
 # TODO
-+  Fill readme with general project info, repo structure, and how to build and run angular app

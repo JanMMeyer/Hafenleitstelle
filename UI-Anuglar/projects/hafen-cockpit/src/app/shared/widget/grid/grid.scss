@@ -1,0 +1,9 @@
+:host {
+  padding: 1rem;
+  box-sizing: border-box;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  grid-gap: 1rem;
+}
