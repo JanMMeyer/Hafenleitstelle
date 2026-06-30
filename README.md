@@ -1,56 +1,108 @@
-# Hafen-Cockpit (Aufgabe: Architektur – "Hafen-Cockpit mit dynamischen Widgets")
+# Hafenleitstelle
 
-## Domäne
-#### *Gegeben*
-*Ein konfigurierbares Dashboard für die Hafenleitstelle.*
-#### Folgerungen & Annahmen
-Business Process Software mit geringer Nutzerzahl -> Ladezeiten nicht entscheidend, dafür komplexerer Use-Case -> Fast Prototype first, performance later, um frühzeitig ein umfassenderes Bild der Anforderungen zu bekommen.
--> Kernanforderungen, erweiterbar und vor allem flexibel implementieren
-##### Code Orga:
-Dashboard ist meist nur der Anfang... Weitere Features? Shared Components? ->
-Projekt workspace mit ng-cli anlegen -> offen für mono repo inkl. backends etc? (change now or never....)
-Neues Repo:
-  + Repo nach Projekt benennen: Hafenleitstelle
-	+ Angular Projects Folder: AngularWeb (Scope: Angular basierte Apps und Libs)
-	+ AppFolder: Hafen-Cockpit (Dashboard)
+A configurable dashboard for the harbor control center (**Hafen-Cockpit**). Users arrange widgets via drag & drop.
 
-## Aufgabenstellung:
-#### *Gegeben*
-Erstelle ein „Hafen-Cockpit", in dem Nutzer Widgets per Drag & Drop anordnen und persistieren können (localStorage).
-Mindestens drei Widget-Typen mit echten Daten:
-  + Tide-Widget: aktueller Wasserstand & Tide-Kurve für den Pegel Hamburg St. Pauli (PEGELONLINE)
-  + Wetter-Widget: aktuelle Bedingungen + Windstärke für Hamburg (DWD/Brightsky)
-  + Warnungen-Widget: aktive Unwetterwarnungen (DWD)
-#### Folgerungen & Annahmen
-Basis Widget mit grid placement. Anforderungen an Darstellungsgröße unterschiedlich:
-	+ Warnungen: meistens leer dafür ggf. dynamische (automatisch angepasste) Größe und scrollbar
-	+ Wetter: braucht nur Zahl und Richtung, fix
-	+ Tide Graph vom user Skalierbar, um hohe Datenauflösung mit gleichzeitigem big picture zu verbinden.
-Tide Widget deckt den allgemeinsten Fall ab, als erstes implementieren (außer scroll).
-Da keine konfligierenden Features oder große Komplexität -> eine Allgemeine Basis Komponente mit flags:
-	+ Resize: User | Auto | none
-	+ Scroll: Auto | none (none für graph, au?er datenzoom, *Nachfragen* )
-	+ Default Grid Size W/H
+## Domain & goals
+
+This is business-process software with a small user base. Load-time performance is secondary to a richer, more complex use case. The approach is **prototype first, optimize later** — implement core requirements in an extensible, flexible way to discover full requirements early.
+
+Data is sourced from **open APIs** only (may be subject to change).
+
+## Architecture
+
+### Code organization
+
+The repo is structured as a **monorepo-ready workspace**:
+
+| Path | Purpose |
+|------|---------|
+| `Hafenleitstelle/` (repo root) | Named after the business domain for easy identification |
+| `UI-Anuglar/` | Angular workspace — all Angular apps and shared libraries |
+| `UI-Anuglar/projects/hafen-cockpit/` | **Hafen-Cockpit** dashboard application |
+
+`UI-Anuglar` is scoped to Angular frontends. Additional stacks (e.g. `UI-React`) or backends can be added as sibling folders later.
 
 
-Für Daten: Open Source APIs.
-### Anforderungen:
-#### *Gegeben*
-  *Dynamisches Laden der Widgets mit Erkennung des Ladezustandes*
-  *Saubere Trennung Core / Shared / Feature, strikte Typisierung, keine any*
-#### Folgerungen & Annahmen
-Laden on:
-	+ Init
-	+ User Refresh
-	+ Change Detection? Websockets?
-Busy State laut spec nur für lesen. Spätere Unterscheidung? ->
-State im Allgemeinen: Für Dashboard Widgets reicht ein lokaler state, da keine komplexeren Abhängigkeiten intern oder extern erwartbar.
-Public API -> DTO Validierung wahrscheinlich nicht nötig, ggf später.
-Eine Api Service pro Widget Instanz, der den eigenen busy state exponiert, ggf differenziert nach art (ladend schreibend),
+Further architecture notes, assumptions, and open questions live in [IMPLEMENTME.md](IMPLEMENTME.md).
 
+### Open questions
 
-### Fragen
-Schreibende Widgets (POST/PUT)? Warnung vor Concurrency handling.
-Läuft auf on premise server? Nur aus lokalem WAN erreichbar? User AUth?
-Separater Refresh und Anzeigen des busy-state von mehreren Unterfunkionen eines Widgets als requirement erwartbar?
-Refresh All?
+- Full-screen display? Integration into an existing app?
+- Write-capable widgets (POST/PUT)? Concurrency handling?
+- On-premise deployment? Local WAN only? User authentication?
+- Per-subfunction refresh and busy state within a single widget?
+- Global “refresh all” action?
+
+## Repository structure
+
+```
+Hafenleitstelle/
+├── UI-Anuglar/                 # Angular workspace (apps and shared libs)
+│   └── projects/
+│       └── hafen-cockpit/      # Hafen-Cockpit dashboard
+...															# Backends etc as Siblings of UI-Folders
+└── README.md
+```
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- npm (bundled with Node.js; the workspace targets npm 10.x)
+
+## Build and run (Hafen-Cockpit)
+
+All Angular commands are run from the workspace root `UI-Anuglar/`.
+
+### Install dependencies
+
+```bash
+cd UI-Anuglar
+npm install
+```
+
+### Development server
+
+```bash
+npm start
+```
+
+This runs `ng serve` for **Hafen-Cockpit**. Open [http://localhost:4200](http://localhost:4200). The app reloads on source changes.
+
+Explicit project name:
+
+```bash
+npx ng serve Hafen-Cockpit
+```
+
+### Production build
+
+```bash
+npm run build
+```
+
+Output: `UI-Anuglar/dist/hafen-cockpit/`
+
+Development build with source maps:
+
+```bash
+npx ng build Hafen-Cockpit --configuration development
+```
+
+### Unit tests
+
+```bash
+npm test
+```
+
+Tests use [Vitest](https://vitest.dev/) via the Angular CLI.
+
+## Tech stack
+
+- **Angular** 21 (standalone components, signals)
+- **TypeScript** 5.9
+- **SCSS** for styling
+- **Vitest** for unit tests
+
+## License
+
+MIT — see [LICENSE](LICENSE).
