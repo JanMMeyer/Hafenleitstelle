@@ -1,5 +1,5 @@
 import { computed, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { WidgetContainer } from './cell/cell';
+import { WidgetContainer } from './container/container';
 
 export type WidgetPosition = {
 	row: number;

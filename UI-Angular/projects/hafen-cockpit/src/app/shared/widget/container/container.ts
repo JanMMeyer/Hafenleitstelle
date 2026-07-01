@@ -23,8 +23,8 @@ import { WidgetService } from '../widget.service';
 		'[style.grid-row]': 'gridRow()',
 		'[style.grid-column]': 'gridColumn()',
 	},
-	templateUrl: './cell.html',
-	styleUrl: './cell.scss',
+	templateUrl: './container.html',
+	styleUrl: './container.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetContainer implements OnDestroy {
@@ -46,7 +46,6 @@ export class WidgetContainer implements OnDestroy {
 	// but then change detection would not be triggered "onPush" anymore, and its less readable.
 
 	public ngOnInit(): void {
-		console.log(this.gridRow(), this.gridColumn());
 		this.widgetService.addWidget(this);
 	}
 

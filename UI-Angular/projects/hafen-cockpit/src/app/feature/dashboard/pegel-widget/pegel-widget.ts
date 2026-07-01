@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, Signal, WritableSignal } from '@angular/core';
-import { WidgetContainer } from '@cockpit/shared/widget/cell/cell';
+import { WidgetContainer } from '@cockpit/app/shared/widget/container/container';
 import { PegelWidgetApiService } from './pegel-widget-api.service';
 import { HttpError } from '@cockpit/app/core/errorHandling/httpError.class';
 import { WithError } from '@cockpit/app/core/errorHandling/WithError.type';
