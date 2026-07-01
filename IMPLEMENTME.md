@@ -52,10 +52,19 @@ Eine Api Service pro Widget Instanz, der den eigenen busy state exponiert, ggf d
 
 
 ### Fragen
-Anzeige Vollbild? Integriert in bestehende App?
+Anzeige Vollbild? Integriert in bestehende App? In Situation room (Große Schrift, skalable ui )?
 Schreibende Widgets (POST/PUT)? Warnung vor Concurrency handling.
 Läuft auf on premise server? Nur aus lokalem WAN erreichbar? User AUth?
 Separater Refresh und Anzeigen des busy-state von mehreren Unterfunkionen eines Widgets als requirement erwartbar?
 Refresh All?
+Error Handling:
+ + Only user Warning (retry on server error, reload page on app runtime error)
+ + Kein tracing?
+Testing? Ai generated am ende, gemäß spec?
+
+Welcher Timeframe für Tidekurve. gewünschte Größe?
+
+
 
 # TODO
+Pegelonline STPauli UUID: d488c5cc-4de9-4631-8ce1-0db0e700b546

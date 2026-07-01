@@ -13,7 +13,22 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "paths": {
+       "@cockpit/app/*": [
+        "./projects/hafen-cockpit/src/app/*"
+      ],
+      "@cockpit/shared/*": [
+        "./projects/hafen-cockpit/src/app/shared/*"
+      ],
+      "@cockpit/feature/*": [
+        "./projects/hafen-cockpit/src/app/feature/*"
+      ],
+      "@cockpit/core/*": [
+        "./projects/hafen-cockpit/src/app/core/*"
+      ]
+
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

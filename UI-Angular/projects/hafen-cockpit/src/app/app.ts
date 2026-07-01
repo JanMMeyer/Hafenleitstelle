@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { WidgetGrid } from './shared/widget/grid/grid';
-import { WidgetContainer } from './shared/widget/cell/cell';
+import { WidgetContainer } from '@cockpit/shared/widget/cell/cell';
 
 @Component({
   selector: 'app-root',

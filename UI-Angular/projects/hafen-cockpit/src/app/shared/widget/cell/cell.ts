@@ -7,10 +7,8 @@ import { WidgetService } from '../widget.service';
   host: {
     class: 'debug',
     // This way change detection is triggered "onPush...
-    '[style.grid-row]': 'row()',
-    '[style.grid-column]': 'col()',
-    '[style.grid-row-span]': 'rowSpan()',
-    '[style.grid-column-span]': 'colSpan()',
+    '[style.grid-row]': 'gridRow()',
+    '[style.grid-column]': 'gridColumn()',
   },
   templateUrl: './cell.html',
   styleUrl: './cell.scss',
@@ -19,15 +17,19 @@ import { WidgetService } from '../widget.service';
 export class WidgetContainer implements OnDestroy {
   protected readonly widgetService = inject(WidgetService);
   // TODO: catch non integer numbers and throw error, consider string type restricted to 1-12 ???
-  public row: InputSignal<number> = input(0);
-  public col: InputSignal<number> = input(0);
-  public rowSpan: InputSignal<number> = input(1);
-  public colSpan: InputSignal<number> = input(1);
+  public readonly row: InputSignal<number> = input(0);
+  public readonly col: InputSignal<number> = input(0);
+  public readonly rowSpan: InputSignal<number> = input(1);
+  public readonly colSpan: InputSignal<number> = input(1);
+
+  public readonly gridRow: Signal<string> = computed(() => `${this.row()} / span ${this.rowSpan()}`);
+  public readonly gridColumn: Signal<string> = computed(() => `${this.col()} / span ${this.colSpan()}`);
 
   // ...Alternatively one could inject the elementRef and use an effect to set the style on native element,
    // but then change detection would not be triggered "onPush" anymore, and its less readable.
 
   public ngOnInit(): void {
+    console.log(this.gridRow(), this.gridColumn());
     this.widgetService.addWidget(this);
    }
 
