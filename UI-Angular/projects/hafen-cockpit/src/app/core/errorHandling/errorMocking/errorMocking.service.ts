@@ -1,10 +1,11 @@
-import { computed, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class ErrorMockingService {
-	private httpErrorPeriod: number = Infinity;
+	public readonly httpErrorPeriod: WritableSignal<number> = signal(0);
+	public readonly httpLatency: WritableSignal<number> = signal(0);
 	private callCounter: number = 0;
 
 	/**
@@ -16,7 +17,7 @@ export class ErrorMockingService {
 	 * @returns void
 	 */
 	public setHttpErrorPeriod(period: number): void {
-		this.httpErrorPeriod = Math.round(Math.min(Math.max(0, period), 100));
+		this.httpErrorPeriod.set(Math.round(Math.min(Math.max(0, period), 100)));
 		this.callCounter = 0;
 	}
 
@@ -25,10 +26,11 @@ export class ErrorMockingService {
 	}
 
 	public get shouldThrow(): boolean {
-		if (this.httpErrorPeriod === 0) {
+		const period = this.httpErrorPeriod();
+		if (period === 0) {
 			return false;
 		}
 		this.callCounter++;
-		return this.callCounter % this.httpErrorPeriod === 0;
+		return this.callCounter % period === 0;
 	}
 }

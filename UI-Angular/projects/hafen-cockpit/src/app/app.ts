@@ -1,11 +1,14 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { HttpErrorMockingControl } from '@cockpit/app/core/errorHandling/errorMocking/httpErrorMockingControl.component';
 import { WidgetGrid } from './shared/widget/grid/grid';
 import { WidgetContainer } from '@cockpit/shared/widget/cell/cell';
+import { PegelWidget } from './feature/dashboard/pegel-widget/pegel-widget';
+import { PegelWidgetApiService } from './feature/dashboard/pegel-widget/pegel-widget-api.service';
 
 @Component({
 	selector: 'app-root',
-	imports: [RouterOutlet, WidgetGrid, WidgetContainer],
+	imports: [WidgetGrid, WidgetContainer, HttpErrorMockingControl, PegelWidget],
+	providers: [PegelWidgetApiService],
 	host: {
 		class: 'debug',
 	},
