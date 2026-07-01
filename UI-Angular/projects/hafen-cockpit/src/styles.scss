@@ -1,13 +1,11 @@
 // This enables app root to be "fullscreen".
-html, body {
-    margin: 0;
-    height: 100%;
+html,
+body {
+	margin: 0;
+	height: 100%;
 }
-
 
 .debug {
-  border: 1px solid hotpink;
-  background-color: lightgreen
+	border: 1px solid hotpink;
+	background-color: lightgreen;
 }
-
-

@@ -1,0 +1,34 @@
+import { computed, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+
+@Injectable({
+	providedIn: 'root',
+})
+export class ErrorMockingService {
+	private httpErrorPeriod: number = Infinity;
+	private callCounter: number = 0;
+
+	/**
+	 * Sets the period for HTTP errors.
+	 * A period of 1 means each call throws an error, 2 means once every 2 calls, etc.
+	 * Period of 0 means no errors are thrown.
+	 * Period will be rounded to the nearest integer.
+	 * @param period - The period for HTTP errors.
+	 * @returns void
+	 */
+	public setHttpErrorPeriod(period: number): void {
+		this.httpErrorPeriod = Math.round(Math.min(Math.max(0, period), 100));
+		this.callCounter = 0;
+	}
+
+	public resetCallCounter(): void {
+		this.callCounter = 0;
+	}
+
+	public get shouldThrow(): boolean {
+		if (this.httpErrorPeriod === 0) {
+			return false;
+		}
+		this.callCounter++;
+		return this.callCounter % this.httpErrorPeriod === 0;
+	}
+}

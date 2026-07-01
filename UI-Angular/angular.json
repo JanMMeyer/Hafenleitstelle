@@ -1,76 +1,76 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "cli": {
-    "packageManager": "npm"
-  },
-  "newProjectRoot": "projects",
-  "projects": {
-    "Hafen-Cockpit": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
-      "root": "projects/hafen-cockpit",
-      "sourceRoot": "projects/hafen-cockpit/src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "browser": "projects/hafen-cockpit/src/main.ts",
-            "tsConfig": "projects/hafen-cockpit/tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "projects/hafen-cockpit/public"
-              }
-            ],
-            "styles": ["projects/hafen-cockpit/src/styles.scss"]
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular/build:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "Hafen-Cockpit:build:production"
-            },
-            "development": {
-              "buildTarget": "Hafen-Cockpit:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test"
-        }
-      }
-    }
-  }
+	"$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+	"version": 1,
+	"cli": {
+		"packageManager": "npm"
+	},
+	"newProjectRoot": "projects",
+	"projects": {
+		"Hafen-Cockpit": {
+			"projectType": "application",
+			"schematics": {
+				"@schematics/angular:component": {
+					"style": "scss"
+				}
+			},
+			"root": "projects/hafen-cockpit",
+			"sourceRoot": "projects/hafen-cockpit/src",
+			"prefix": "app",
+			"architect": {
+				"build": {
+					"builder": "@angular/build:application",
+					"options": {
+						"browser": "projects/hafen-cockpit/src/main.ts",
+						"tsConfig": "projects/hafen-cockpit/tsconfig.app.json",
+						"inlineStyleLanguage": "scss",
+						"assets": [
+							{
+								"glob": "**/*",
+								"input": "projects/hafen-cockpit/public"
+							}
+						],
+						"styles": ["projects/hafen-cockpit/src/styles.scss"]
+					},
+					"configurations": {
+						"production": {
+							"budgets": [
+								{
+									"type": "initial",
+									"maximumWarning": "500kB",
+									"maximumError": "1MB"
+								},
+								{
+									"type": "anyComponentStyle",
+									"maximumWarning": "4kB",
+									"maximumError": "8kB"
+								}
+							],
+							"outputHashing": "all"
+						},
+						"development": {
+							"optimization": false,
+							"extractLicenses": false,
+							"sourceMap": true
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"serve": {
+					"builder": "@angular/build:dev-server",
+					"configurations": {
+						"production": {
+							"buildTarget": "Hafen-Cockpit:build:production"
+						},
+						"development": {
+							"buildTarget": "Hafen-Cockpit:build:development"
+						}
+					},
+					"defaultConfiguration": "development"
+				},
+				"test": {
+					"builder": "@angular/build:unit-test"
+				}
+			}
+		}
+	}
 }
