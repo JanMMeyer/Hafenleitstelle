@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ErrorMockingService } from './errorMocking.service';
-
+// AI generated... manually modified
 @Component({
 	selector: 'app-http-error-period-control',
 	template: `
