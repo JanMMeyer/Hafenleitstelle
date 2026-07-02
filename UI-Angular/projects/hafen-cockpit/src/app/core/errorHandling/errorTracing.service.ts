@@ -7,6 +7,8 @@ import { catchError, first, of, take } from 'rxjs';
 })
 export class ErrorTracingService {
 	private readonly http: HttpClient = inject(HttpClient);
+
+	// Mocked and will fail
 	private readonly logUrl: string = 'https://foo.bar';
 
 	public logError(error: Error): void {

@@ -106,3 +106,5 @@ Tests use [Vitest](https://vitest.dev/) via the Angular CLI.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+--- AI generated, reviewed by human ---
