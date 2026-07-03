@@ -1,4 +1,7 @@
 app-widget-container {
+	width: 10rem;
+	height: 10rem;
 	display: flex;
-	align-items: center;
+	flex-direction: column;
+
 }

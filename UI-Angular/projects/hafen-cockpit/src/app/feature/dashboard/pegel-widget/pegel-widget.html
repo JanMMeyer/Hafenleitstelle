@@ -1,15 +1,19 @@
 <app-widget-container [row]="2" [col]="1" [rowSpan]="1" [colSpan]="4">
-	@let pegelCurrent = pegelCurrentExhaustable().value;
-	@let pegelCurrentType = pegelCurrentExhaustable().type;
-	@switch (pegelCurrentType) {
-		@case 'data':
-			<span>{{ pegelCurrent.shortname }}</span>
-		@case 'error':
-			<span>Error: Invalid data</span>
-			@break;
-		@case 'undefined':
-			...loading...
-			@break;
+	<button (click)="onRefreshClick()">Refresh</button>
+	@if (pegelService.isBusyLoading()) { <mat-progress-bar mode="indeterminate"></mat-progress-bar> }
+	@let pegelCurrent = pegelCurrentExhaustible();
+	@switch (pegelCurrent.type) {
+		@case ('data') {
+			<span>{{ pegelCurrent.value.shortname }}</span>
+		}
+		@case ('error') {
+			<span>Es gibt ein Problem mit der Serververbindung, bitte warten sie ein paar minuten und nutzen die Refresh-Funktion des Widgets.</span>
+		}
+		@case ('undefined') {
+			<span>...loading...</span>
+		}
+		@default { never(pegelCurrent) }
+
 	}
 
 	<!-- <img

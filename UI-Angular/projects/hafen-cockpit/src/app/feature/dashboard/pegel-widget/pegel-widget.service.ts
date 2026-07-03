@@ -1,9 +1,9 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
-import { ErrorTracingService } from '@cockpit/app/core/errorHandling/errorTracing.service';
+import { computed, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
+import { ErrorLoggingService } from '@cockpit/app/core/errorHandling/errorLogging.service';
 import { HttpError } from '@cockpit/app/core/errorHandling/httpError.class';
 import { WithError } from '@cockpit/app/core/errorHandling/WithError.type';
-import { catchError, Observable, of, Subscription, tap } from 'rxjs';
+import { catchError, finalize, Observable, of, Subscription, tap } from 'rxjs';
 import { PegelDataDto } from './PegellData.dto';
 import { rxResource } from '@angular/core/rxjs-interop';
 
@@ -21,7 +21,8 @@ export class PegelWidgetService {
 		this.baseApiUrl + this.locationUUID + '/W/measurements.png?start=P7D&width=440&height=220';
 
 	private readonly http: HttpClient = inject(HttpClient);
-	private readonly errorTracingService: ErrorTracingService = inject(ErrorTracingService);
+	// private readonly errorTracingService: ErrorTracingService = inject(ErrorTracingService);
+	private readonly errorTracingService: ErrorLoggingService = new ErrorLoggingService();
 
 	// Hier könnte man auch ein protected Subscrion-Set in der base service class erwägen. Vorteil: nur eine property die batch unsubscibe erlaubt.
 	private pegelCurrentSubscription?: Subscription
@@ -42,14 +43,15 @@ export class PegelWidgetService {
 	// Der "WithError" return type dient dazu die lokale handling von http errors zu "erzwingen"
 	// Dies sollte in einer base service class angelegt werden, oder noch besser in eine httpClient wrapper (siehe App Config).
 	public readonly pegelCurrent: Signal<WithError<PegelDataDto, HttpError> | undefined> = this._pegelCurrent.asReadonly();
-	public readonly isBusyLoading: Signal<boolean> = signal(false);
+	// public readonly isBusyLoading: Signal<boolean> = computed(() => this._isPegelCurrentLoading() || this._isPegelHistoryPngLoading());
+	public readonly isBusyLoading: Signal<boolean> = computed(() => this._isPegelCurrentLoading() || this._isPegelHistoryPngLoading());
 
 
 
 	public fetchData(): void {
 		this.cancelFetchDataRequests();
 
-		this.pegelCurrentSubscription = this.fethPegelCurrent()
+		this.pegelCurrentSubscription = this.fetchPegelCurrent()
 			.subscribe((pegelCurrent) => this._pegelCurrent.set(pegelCurrent));
 
 		// this.pegelHistoryPngSubscription = this.fetchPegelHistoryPng()
@@ -68,17 +70,16 @@ export class PegelWidgetService {
 	}
 
 
-	private fethPegelCurrent(): Observable<WithError<any, HttpError>> {
+	private fetchPegelCurrent(): Observable<WithError<any, HttpError>> {
 		this._isPegelCurrentLoading.set(true);
+		console.log('fetchPegelCurrent');
 		return this.http.get(this.pegelCurrentUrl).pipe(
-			tap(() => this._isPegelCurrentLoading.set(false)),
+			// TODO: error catch protected in base service class or better in a httpClient wrapper.
 			catchError((error: unknown) => {
-				if (error instanceof HttpErrorResponse) {
-					this.errorTracingService.logError(error);
-					return of(new HttpError(error.error, error.status));
-				}
-				throw new Error('Unknown Http Error', { cause: error });
+				if (!(error instanceof HttpErrorResponse)) throw new Error('Unexpected argument type in catchError', { cause: error });
+				return of(new HttpError(error.error, error.status));
 			}),
+			finalize(() => this._isPegelCurrentLoading.set(false)),
 		);
 	}
 
@@ -86,15 +87,11 @@ export class PegelWidgetService {
 		this._isPegelHistoryPngLoading.set(true);
 		return this.http.get(this.pegelHistoryPngUrl).pipe(
 			// TODO: error catch protected in base service class.
-			tap(() => this._isPegelHistoryPngLoading.set(false)),
-
 			catchError((error: unknown) => {
-				if (error instanceof HttpErrorResponse) {
-					this.errorTracingService.logError(error);
-					return of(new HttpError(error.error, error.status));
-				}
-				throw new Error('Unknown Http Error', { cause: error });
+				if (!(error instanceof HttpErrorResponse)) throw new Error('Unexpected argument type in catchError', { cause: error });
+				return of(new HttpError(error.error, error.status));
 			}),
+			finalize(() => this._isPegelCurrentLoading.set(false)),
 		);
 	}
 

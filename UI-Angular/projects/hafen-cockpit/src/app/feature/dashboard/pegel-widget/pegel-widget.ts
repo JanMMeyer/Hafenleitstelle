@@ -1,15 +1,16 @@
-import { Component, computed, inject, OnDestroy, OnInit, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, computed, effect, inject, OnDestroy, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { WidgetContainer } from '@cockpit/app/shared/widget/container/container';
 import { PegelWidgetService } from './pegel-widget.service';
 import { HttpError } from '@cockpit/app/core/errorHandling/httpError.class';
 import { WithError } from '@cockpit/app/core/errorHandling/WithError.type';
 import { isPegelDataDto, PegelDataDto } from './PegellData.dto';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-type ExhaustableWithError<TData, TError extends Error> =
+type ExhaustibleWithError<TData, TError extends Error> =
 { value: TData, type: 'data' } | { value: TError, type: 'error' } | { value: undefined, type: 'undefined' };
 @Component({
 	selector: 'app-pegel-widget',
-	imports: [WidgetContainer],
+	imports: [WidgetContainer, MatProgressBarModule],
 	templateUrl: './pegel-widget.html',
 	styleUrl: './pegel-widget.scss',
 })
@@ -17,8 +18,9 @@ export class PegelWidget implements OnInit, OnDestroy {
 
 
 	public readonly pegelService: PegelWidgetService = inject(PegelWidgetService);
+	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
 	// TODO: put in shared
-	public readonly pegelCurrentExhaustable: Signal<ExhaustableWithError<PegelDataDto, HttpError>> = computed(() => {
+	public readonly pegelCurrentExhaustible: Signal<ExhaustibleWithError<PegelDataDto, HttpError>> = computed(() => {
 		const value: WithError<PegelDataDto, HttpError> | undefined = this.pegelService.pegelCurrent();
 		if (!value) {
 			return { value: undefined, type: 'undefined' };
@@ -29,8 +31,12 @@ export class PegelWidget implements OnInit, OnDestroy {
 		}
 		return {} as never;
 	});
-	public readonly isPegelDataDto = isPegelDataDto;
-	// public readonly pegelHasError: Signal<bo> = computed((): this.pegelService.pegelCurrent() is PegelDataDto => this.pegelService.pegelCurrent() instanceof HttpError);
+
+
+	public onRefreshClick(): void {
+		this.refreshBlocked.set(true);
+		this.pegelService.fetchData();
+	}
 
 	public ngOnInit(): void {
 		// Only fetch data once on init

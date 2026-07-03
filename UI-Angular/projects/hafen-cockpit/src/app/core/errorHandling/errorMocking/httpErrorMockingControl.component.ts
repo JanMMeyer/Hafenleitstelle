@@ -19,11 +19,12 @@ import { ErrorMockingService } from './errorMocking.service';
 				name="httpLatency"
 				type="range"
 				min="0"
-				max="5"
-				step="1"
+				max="3000"
+				step="200"
 				[value]="errorMocking.httpLatency()"
 				(input)="onLatencyChange($event)"
 			/>
+		<button type="button" (click)="onThrowRuntimeError()">Throw error</button>
 	`,
 	styles: `
 		:host {
@@ -58,5 +59,9 @@ export class HttpErrorMockingControl {
 	protected onLatencyChange(event: Event): void {
 		const value = Number((event.target as HTMLInputElement).value);
 		this.errorMocking.httpLatency.set(value);
+	}
+
+	protected onThrowRuntimeError(): void {
+		throw new Error('Mock runtime error from error mocking control');
 	}
 }

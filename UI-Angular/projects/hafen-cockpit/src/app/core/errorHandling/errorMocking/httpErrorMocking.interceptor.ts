@@ -1,5 +1,5 @@
-import { HttpEvent, HttpEventType, HttpHandlerFn, HttpRequest } from '@angular/common/http';
-import { delay, map, Observable } from 'rxjs';
+import { HttpErrorResponse, HttpEvent, HttpEventType, HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import { delay, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { ErrorMockingService } from './errorMocking.service';
 import { inject } from '@angular/core';
 import { HttpError } from '../httpError.class';
@@ -8,15 +8,20 @@ export function httpErrorMockingInterceptor(
 	request: HttpRequest<unknown>,
 	handleHttp: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
-	const errorMockingService = inject(ErrorMockingService);
+	const errorMockingService: ErrorMockingService = inject(ErrorMockingService);
 	return handleHttp(request).pipe(
 		delay(errorMockingService.httpLatency()),
-		map((event: HttpEvent<unknown>) => {
+		switchMap((event: HttpEvent<unknown>) => {
 			if (event.type === HttpEventType.Response && errorMockingService.shouldThrow) {
-				throw new HttpError(new Error('Some Backend Oopsie Woopsie'), 404);
+				return throwError(() =>  new HttpErrorResponse( {
+					error: new Error('Some Backend Oopsie Woopsie'),
+					status: 500,
+					statusText: 'Internal Server Error',
+					url: request.url,
+				}))
 			}
-			return event;
-		}),
+			return of(event);
+		})
 
 	);
 }
