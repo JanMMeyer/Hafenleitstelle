@@ -1,6 +1,7 @@
-import { ComponentRef, Directive, inject, input, InputSignal, TemplateRef, ViewContainerRef } from '@angular/core';
+import { ComponentRef, Directive, effect, EffectRef, inject, input, InputSignal, TemplateRef, ViewContainerRef } from '@angular/core';
 import { AsyncDataService } from '../types/BusyDataSource.type';
-import { AsyncOutletContainer } from './async-outlet-container';
+import { AsyncOutletContainer } from './outlet-container/async-outlet-container';
+import { setCompRefInputTyped } from '../fundamentals/setCompRefInputTyped';
 
 // The purpose of this directive is to make handling of loading and error state easier
 // and more consistent (also changeable in one place).
@@ -17,12 +18,25 @@ export class AsyncOutlet<TData extends object> {
 
 	private readonly templateRef: TemplateRef<{ data: TData }> = inject(TemplateRef<{ data: TData }>);
 	private readonly vcr: ViewContainerRef = inject(ViewContainerRef);
+	private readonly effectRef: EffectRef
 
 	public readonly appAsyncOutlet: InputSignal<AsyncDataService<TData>> = input.required();
 
 	constructor() {
-		const frameRef: ComponentRef<AsyncOutletContainer<TData>> = this.vcr.createComponent(AsyncOutletContainer<TData>);
-		frameRef.setInput('contentTemplate', () => this.templateRef);
-		frameRef.setInput('asyncDataService', () => this.appAsyncOutlet());
+		this.effectRef = effect(() => {
+			const containerRef: ComponentRef<AsyncOutletContainer<TData>> = this.vcr.createComponent(AsyncOutletContainer<TData>);
+			// not typesafe ...
+			// frameRef.setInput('contentTemplate', () => this.templateRef);
+			// frameRef.setInput('asyncDataService', () => this.appAsyncOutlet());
+			// ... custom wrapper to the rescue:
+			setCompRefInputTyped(containerRef, 'contentTemplate', this.templateRef);
+			setCompRefInputTyped(containerRef, 'asyncDataService',this.appAsyncOutlet());
+		});
+	}
+
+	ngOnDestroy(): void {
+		this.effectRef.destroy();
 	}
 }
+
+

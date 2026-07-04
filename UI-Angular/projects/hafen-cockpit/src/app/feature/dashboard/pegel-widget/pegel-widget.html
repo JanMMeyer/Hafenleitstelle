@@ -1,6 +1,4 @@
 <app-widget-container [row]="2" [col]="1" [rowSpan]="1" [colSpan]="4">
-	<!-- <button (click)="onRefreshClick()" [disabled]="refreshBlocked()">Refresh</button>
-	@if (pegelService.isBusy()) { <mat-progress-bar mode="indeterminate"></mat-progress-bar> } -->
 
 	<ng-container *appAsyncOutlet="pegelService; let pegel=data">
 		<span>{{ pegel.shortname }}</span>

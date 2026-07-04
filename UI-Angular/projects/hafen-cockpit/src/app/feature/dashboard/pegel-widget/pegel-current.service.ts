@@ -10,6 +10,12 @@ import { AsyncDataService } from '@cockpit/app/core/types/BusyDataSource.type';
 
 //  TODO location as injectable token
 // 'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/${location}/W/measurements.png?start=P7D&width=440&height=220';
+
+// Move providers: [PegelWidgetService] from App to PegelWidget if the service should die with the widget.
+// In the service constructor, use inject(DestroyRef) + takeUntilDestroyed(this.destroyRef) for lifecycle-bound streams.
+// Keep cancelFetchDataRequests() (or switchMap on a refresh Subject) for replacing in-flight HTTP on refresh.
+// Drop manual destroy() / ngOnDestroy once everything uses takeUntilDestroyed(DestroyRef).
+// AsyncOutletContainer already uses takeUntilDestroyed() correctly — but that works because it’s a component in an injection context. The same API works in a scoped service if DestroyRef comes from the component that provides the service.
 @Injectable()
 export class PegelWidgetService implements AsyncDataService<PegelDataDto> {
 	private readonly baseApiUrl: string =
