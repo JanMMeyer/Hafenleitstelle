@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { HttpErrorMockingControl } from '@cockpit/app/core/errorHandling/errorMocking/httpErrorMockingControl.component';
 import { WidgetGrid } from './shared/widget/grid/grid';
 import { WidgetContainer } from '@cockpit/app/shared/widget/container/container';
@@ -13,6 +13,7 @@ import { PegelWidgetService } from './feature/dashboard/pegel-widget/pegel-curre
 		class: 'debug',
 	},
 	templateUrl: './app.html',
+	changeDetection: ChangeDetectionStrategy.Eager,
 	styleUrl: './app.scss',
 })
 export class App {

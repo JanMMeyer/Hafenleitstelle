@@ -1,4 +1,12 @@
-import { Component, inject, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
+import {
+	Component,
+	inject,
+	OnDestroy,
+	OnInit,
+	signal,
+	WritableSignal,
+	ChangeDetectionStrategy,
+} from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AsyncOutlet } from '@cockpit/app/core/async-outlet/async-outlet';
 import { WidgetContainer } from '@cockpit/app/shared/widget/container/container';
@@ -11,25 +19,26 @@ import { HTTP_RETRY_CONFIG } from '@cockpit/app/core/errorHandling/errorRetry.in
 	selector: 'app-pegel-widget',
 	imports: [WidgetContainer, MatProgressBarModule, AsyncOutlet],
 	templateUrl: './pegel-widget.html',
+	changeDetection: ChangeDetectionStrategy.Eager,
 	styleUrl: './pegel-widget.scss',
 })
 export class PegelWidget implements OnInit, OnDestroy {
-
 	private readonly refreshBockTrigger$: Subject<void> = new Subject<void>();
 
 	public readonly pegelService: PegelWidgetService = inject(PegelWidgetService);
 	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
 
-
 	constructor() {
-		this.refreshBockTrigger$.pipe(
-			filter(() => !this.refreshBlocked()),
-			tap(() => this.refreshBlocked.set(true)),
-			switchMap(() => timer(Math.floor(HTTP_RETRY_CONFIG.maxRetryDurationInMs / 3))),
-			takeUntilDestroyed()
-		).subscribe(() => {
-			this.refreshBlocked.set(false);
-		});
+		this.refreshBockTrigger$
+			.pipe(
+				filter(() => !this.refreshBlocked()),
+				tap(() => this.refreshBlocked.set(true)),
+				switchMap(() => timer(Math.floor(HTTP_RETRY_CONFIG.maxRetryDurationInMs / 3))),
+				takeUntilDestroyed(),
+			)
+			.subscribe(() => {
+				this.refreshBlocked.set(false);
+			});
 	}
 
 	public onRefreshClick(): void {
@@ -45,6 +54,6 @@ export class PegelWidget implements OnInit, OnDestroy {
 
 	public ngOnDestroy(): void {
 		this.pegelService.destroy();
-		this.refreshBockTrigger$.complete()
+		this.refreshBockTrigger$.complete();
 	}
 }

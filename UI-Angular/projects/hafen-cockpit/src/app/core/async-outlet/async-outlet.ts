@@ -1,18 +1,6 @@
-import { ComponentRef, Directive, effect, EffectRef, inject, input, InputSignal, TemplateRef, ViewContainerRef } from '@angular/core';
-import { HttpError } from '../errorHandling/httpError.class';
-import { implyNever } from '../fundamentals/implyNever';
+import { ComponentRef, Directive, inject, input, InputSignal, TemplateRef, ViewContainerRef } from '@angular/core';
 import { AsyncDataService } from '../types/BusyDataSource.type';
-import { AsyncOutletError } from './state-components/async-outlet-error';
-import { AsyncOutletLoading } from './state-components/async-outlet-loading';
 import { AsyncOutletContainer } from './async-outlet-container';
-
-
-// static ngTemplateContextGuard<TData extends object>(
-// 	_dir: AsyncOutletDirective<TData>,
-// 	_ctx: unknown,
-//   ): _ctx is { $implicit: TData; data: TData } {
-// 	return true;
-//   }
 
 // The purpose of this directive is to make handling of loading and error state easier
 // and more consistent (also changeable in one place).
