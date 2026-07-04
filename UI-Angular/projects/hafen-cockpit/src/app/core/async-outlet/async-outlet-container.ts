@@ -1,12 +1,12 @@
 import { Component, computed, effect, EffectRef, input, InputSignal, OnDestroy, Signal, signal, TemplateRef, WritableSignal } from '@angular/core';
-import { AsyncDataService } from '../../types/BusyDataSource.type';
+import { AsyncDataService } from '../types/BusyDataSource.type';
 import { Subject } from 'rxjs';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NgTemplateOutlet } from '@angular/common';
-import { implyNever } from '../../fundamentals/implyNever';
-import { HttpError } from '../../errorHandling/httpError.class';
-import { SwitchExhaustibleAsyncDataWrapper } from '../../types/SwitchExhaustibleAsyncDataWrapper.type';
-import { WithError } from '../../types/WithError.type';
+import { implyNever } from '../fundamentals/implyNever';
+import { HttpError } from '../errorHandling/httpError.class';
+import { SwitchExhaustibleAsyncDataWrapper } from '../types/SwitchExhaustibleAsyncDataWrapper.type';
+import { WithError } from '../types/WithError.type';
 
 @Component({
 	selector: 'app-async-outlet-data',
@@ -26,10 +26,9 @@ import { WithError } from '../../types/WithError.type';
 			@case ('data') {
 				<ng-container *ngTemplateOutlet="contentTemplate(); context: { data: wrappedData.value }" />
 			}
-			@default never(wrappedData);
+			<!-- @default never(wrappedData); -->
 		}
 	`,
-	// templateUrl: './async-outlet-data.html',
 	styles: `
 		:host {
 			display: flex;
@@ -37,7 +36,7 @@ import { WithError } from '../../types/WithError.type';
 		}
 	`
 })
-export class AsyncOutletData<TData extends object> {
+export class AsyncOutletContainer<TData extends object> {
 
 	private readonly refreshBockTrigger$: Subject<void> = new Subject<void>();
 

@@ -4,7 +4,7 @@ import { implyNever } from '../fundamentals/implyNever';
 import { AsyncDataService } from '../types/BusyDataSource.type';
 import { AsyncOutletError } from './state-components/async-outlet-error';
 import { AsyncOutletLoading } from './state-components/async-outlet-loading';
-import { AsyncOutletData } from './state-components/async-outlet-data';
+import { AsyncOutletContainer } from './async-outlet-container';
 
 
 // static ngTemplateContextGuard<TData extends object>(
@@ -29,37 +29,12 @@ export class AsyncOutlet<TData extends object> {
 
 	private readonly templateRef: TemplateRef<{ data: TData }> = inject(TemplateRef<{ data: TData }>);
 	private readonly vcr: ViewContainerRef = inject(ViewContainerRef);
-	private readonly effectRef: EffectRef
 
-
-	// public readonly appAsyncOutlet: InputSignal<WithError<TData, HttpError> | undefined> = input.required<WithError<TData, HttpError> | undefined>()
-	// public readonly busyDataSource: InputSignal<AsyncDataService> = input.required();
 	public readonly appAsyncOutlet: InputSignal<AsyncDataService<TData>> = input.required();
 
 	constructor() {
-		this.effectRef = effect(() => {
-			const value = this.appAsyncOutlet().data();
-
-			this.vcr.clear();
-
-			if (!value) {
-				this.vcr.createComponent(AsyncOutletLoading);
-			} else if (value instanceof HttpError) {
-				this.vcr.createComponent(AsyncOutletError);
-			} else if (value instanceof Object) {
-				// this.vcr.createEmbeddedView(this.templateRef, {	data: value });
-				const frameRef: ComponentRef<AsyncOutletData<TData>> = this.vcr.createComponent(AsyncOutletData<TData>);
-				frameRef.setInput('contentTemplate', () => this.templateRef);
-				frameRef.setInput('context', { data: value });
-				frameRef.setInput('asyncDataService', () => this.appAsyncOutlet());
-			} else {
-				return implyNever(value)
-			}
-		});
+		const frameRef: ComponentRef<AsyncOutletContainer<TData>> = this.vcr.createComponent(AsyncOutletContainer<TData>);
+		frameRef.setInput('contentTemplate', () => this.templateRef);
+		frameRef.setInput('asyncDataService', () => this.appAsyncOutlet());
 	}
-
-	public ngOnDestroy(): void {
-		this.effectRef.destroy();
-	}
-
 }
