@@ -3,7 +3,7 @@ import { HttpErrorMockingControl } from '@cockpit/app/core/errorHandling/errorMo
 import { WidgetGrid } from './shared/widget/grid/grid';
 import { WidgetContainer } from '@cockpit/app/shared/widget/container/container';
 import { PegelWidget } from './feature/dashboard/pegel-widget/pegel-widget';
-import { PegelWidgetService } from './feature/dashboard/pegel-widget/pegel-widget.service';
+import { PegelWidgetService } from './feature/dashboard/pegel-widget/pegel-current.service';
 
 @Component({
 	selector: 'app-root',

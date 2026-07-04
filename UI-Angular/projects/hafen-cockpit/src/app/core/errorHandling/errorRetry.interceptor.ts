@@ -25,28 +25,9 @@ export const HTTP_RETRY_CONFIG: Readonly<{ maxRetries: number, delay: number, er
 	maxRetries,
 	delay: delayInMs,
 	errorLoggingPath: '/error/add',
-	maxRetryDurationInMs };
+	maxRetryDurationInMs
+};
 
-// @Injectable({
-// 	providedIn: 'root'
-// })
-// export class ErrorInterceptor implements HttpInterceptor {
-
-// 	public intercept(request: HttpRequest<unknown>, httpHandler: HttpHandler): Observable<HttpEvent<unknown>> {
-// 		return httpHandler.handle(request).pipe(
-// 			retry({
-// 				count: HTTP_RETRY_CONFIG.maxRetries,
-// 				delay: (error: HttpErrorResponse, retryCount: number) => {
-// 				if (this.shouldSkipRetry(error)) throw error
-// 				return timer(getRetryDelay(retryCount));
-// 			}})
-// 		)
-// 	}
-// 	private shouldSkipRetry(errorResponse: HttpErrorResponse): boolean {
-// 		return !errorResponse.status || !errorStatusToRetry.has(errorResponse.status)
-// 	}
-
-// }
 
 export function httpErrorRetryInterceptor(
 	request: HttpRequest<unknown>,

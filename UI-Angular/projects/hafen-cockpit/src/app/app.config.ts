@@ -25,7 +25,7 @@ export const appConfig: ApplicationConfig = {
 		{ provide: ErrorHandler, useClass: GlobalAppErrorHandler, deps: [ErrorLoggingService] },
 		// Interceptors are executed in the order they are provided for a REQUEST. Meaning that the LAST interceptor sees the RESPONSE first.
 		//                                  REQEST execution order ->                               <- RESPONSE execution order
-		provideHttpClient(withInterceptors([httpErrorLoggingInterceptor, httpErrorMockingInterceptor])),
+		provideHttpClient(withInterceptors([httpErrorLoggingInterceptor, httpErrorRetryInterceptor, httpErrorMockingInterceptor])),
 		provideRouter(routes),
 	],
 };

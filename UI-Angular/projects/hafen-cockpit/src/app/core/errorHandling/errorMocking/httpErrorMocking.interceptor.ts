@@ -1,8 +1,12 @@
 import { HttpErrorResponse, HttpEvent, HttpEventType, HttpHandlerFn, HttpRequest } from '@angular/common/http';
-import { delay, map, Observable, of, switchMap, throwError } from 'rxjs';
+import { delay, Observable, of, switchMap, throwError } from 'rxjs';
 import { ErrorMockingService } from './errorMocking.service';
 import { inject } from '@angular/core';
-import { HttpError } from '../httpError.class';
+
+const mockStatusText: Record<500 | 408, string> = {
+	500: 'Internal Server Error',
+	408: 'Request Timeout',
+};
 
 export function httpErrorMockingInterceptor(
 	request: HttpRequest<unknown>,
@@ -13,12 +17,13 @@ export function httpErrorMockingInterceptor(
 		delay(errorMockingService.httpLatency()),
 		switchMap((event: HttpEvent<unknown>) => {
 			if (event.type === HttpEventType.Response && errorMockingService.shouldThrow) {
-				return throwError(() =>  new HttpErrorResponse( {
+				const status = errorMockingService.httpErrorStatus();
+				return throwError(() => new HttpErrorResponse({
 					error: new Error('Some Backend Oopsie Woopsie'),
-					status: 500,
-					statusText: 'Internal Server Error',
+					status,
+					statusText: mockStatusText[status],
 					url: request.url,
-				}))
+				}));
 			}
 			return of(event);
 		})

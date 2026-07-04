@@ -1,0 +1,16 @@
+<button (click)="refresh()" [disabled]="refreshBlocked()">Refresh</button>
+@if (asyncDataService().isBusy()) { <mat-progress-bar mode="indeterminate"></mat-progress-bar> }
+
+@let wrappedData = wrappedSwitchData();
+@switch (wrappedData.type) {
+	@case ('undefined') {
+		<span>...loading...</span>
+	}
+	@case ('error') {
+		<span>Es gibt ein Problem mit der Serververbindung, bitte warten sie ein paar minuten und nutzen die Refresh-Funktion des Widgets.</span>
+	}
+	@case ('data') {
+		<ng-container *ngTemplateOutlet="contentTemplate(); context: { data: wrappedData.value }" />
+	}
+	@default never(wrappedData);
+}

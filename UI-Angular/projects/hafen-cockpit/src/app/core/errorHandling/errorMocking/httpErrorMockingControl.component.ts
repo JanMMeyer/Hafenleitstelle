@@ -1,9 +1,30 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { ErrorMockingService } from './errorMocking.service';
+import { ErrorMockingService, MockHttpErrorStatus } from './errorMocking.service';
 // AI generated... manually modified
 @Component({
 	selector: 'app-http-error-period-control',
 	template: `
+			<fieldset>
+			<legend>HTTP error type</legend>
+			<label>
+				<input
+					type="radio"
+					name="httpErrorStatus"
+					[checked]="errorMocking.httpErrorStatus() === 500"
+					(change)="onErrorStatusChange(500)"
+				/>
+				500
+			</label>
+			<label>
+				<input
+					type="radio"
+					name="httpErrorStatus"
+					[checked]="errorMocking.httpErrorStatus() === 408"
+					(change)="onErrorStatusChange(408)"
+				/>
+				408
+			</label>
+		</fieldset>
 		<label for="httpErrorPeriod">HTTP error period: {{ errorMocking.httpErrorPeriod() }}</label>
 		<input
 				name="httpErrorPeriod"
@@ -24,7 +45,8 @@ import { ErrorMockingService } from './errorMocking.service';
 				[value]="errorMocking.httpLatency()"
 				(input)="onLatencyChange($event)"
 			/>
-		<button type="button" (click)="onThrowRuntimeError()">Throw error</button>
+
+		<button type="button" (click)="onThrowRuntimeError()">Throw App Error</button>
 	`,
 	styles: `
 		:host {
@@ -45,6 +67,14 @@ import { ErrorMockingService } from './errorMocking.service';
 		input[type='range'] {
 			width: 10rem;
 		}
+
+		fieldset {
+			border: none;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			gap: 0.75rem;
+		}
 	`,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -59,6 +89,10 @@ export class HttpErrorMockingControl {
 	protected onLatencyChange(event: Event): void {
 		const value = Number((event.target as HTMLInputElement).value);
 		this.errorMocking.httpLatency.set(value);
+	}
+
+	protected onErrorStatusChange(status: MockHttpErrorStatus): void {
+		this.errorMocking.httpErrorStatus.set(status);
 	}
 
 	protected onThrowRuntimeError(): void {
