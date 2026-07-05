@@ -20,15 +20,52 @@ import { implyNever } from '../../fundamentals/implyNever';
 import { AsyncDataSource } from '../../types/AsyncDataSource.type';
 import { SwitchExhaustibleAsyncDataWrapper } from '../../types/SwitchExhaustibleAsyncDataWrapper.type';
 import { WithError } from '../../types/WithError.type';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-async-outlet-data',
-	imports: [MatProgressBarModule, NgTemplateOutlet],
+	imports: [
+		MatProgressBarModule,
+		MatButtonModule,
+		MatIconModule,
+		MatProgressSpinnerModule,
+		NgTemplateOutlet,
+	],
 	templateUrl: './async-outlet-container.html',
 	styles: `
 		:host {
-			display: flex;
-			flex-direction: column;
+			position: relative;
+			display: block;
+			height: 100%;
+
+			.progress-bar-container {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				box-sizing: border-box;
+				padding: 2px;
+			}
+			mat-progress-bar {
+				border-radius: 2px;
+				z-index: 2;
+			}
+
+			.refresh-button {
+				position: absolute;
+				opacity: 0;
+				top: 0;
+				right: 0rem;
+				z-index: 2;
+				&:hover {
+					opacity: 1;
+				}
+			}
+			&:hover .refresh-button:not(:hover) {
+				opacity: 0.5;
+			}
 		}
 	`,
 })

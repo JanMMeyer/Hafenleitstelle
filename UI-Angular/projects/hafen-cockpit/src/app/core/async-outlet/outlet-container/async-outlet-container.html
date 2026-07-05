@@ -1,6 +1,10 @@
-<button (click)="refresh()" [disabled]="refreshBlocked()">Refresh</button>
+<button class="refresh-button" matMiniFab (click)="refresh()" [disabled]="refreshBlocked()">
+	<mat-icon>refresh</mat-icon>
+</button>
 @if (asyncDataService().isLoading()) {
-	<mat-progress-bar mode="indeterminate"></mat-progress-bar>
+	<div class="progress-bar-container">
+		<mat-progress-bar mode="indeterminate"></mat-progress-bar>
+	</div>
 }
 
 @let wrappedData = wrappedSwitchData();

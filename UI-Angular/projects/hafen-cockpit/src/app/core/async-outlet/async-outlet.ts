@@ -13,6 +13,10 @@ import { AsyncDataSource } from '../types/AsyncDataSource.type';
 import { AsyncOutletContainer } from './outlet-container/async-outlet-container';
 import { setCompRefInputTyped } from '../fundamentals/setCompRefInputTyped';
 
+export type AsyncOutletContext<TData extends object> = {
+	data: TData;
+};
+
 // The purpose of this directive is to make handling of loading and error state easier
 // and more consistent (also changeable in one place).
 // More importantly, it nudges developers to catch and forward errors from async resources
@@ -25,6 +29,14 @@ import { setCompRefInputTyped } from '../fundamentals/setCompRefInputTyped';
 // but then you need a custom type guard... for now: just wrap it in an object.
 // Consider: above suggestion.
 export class AsyncOutlet<TData extends object> {
+	static ngTemplateContextGuard<TData extends object>(
+		_dir: AsyncOutlet<TData>,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		_ctx: unknown,
+	): _ctx is AsyncOutletContext<TData> {
+		return true;
+	}
+
 	private readonly templateRef: TemplateRef<{ data: TData }> = inject(TemplateRef<{ data: TData }>);
 	private readonly vcr: ViewContainerRef = inject(ViewContainerRef);
 	private readonly effectRef: EffectRef;
