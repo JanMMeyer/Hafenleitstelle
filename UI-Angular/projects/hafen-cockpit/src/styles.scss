@@ -5,6 +5,7 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+@import 'weather-icons/css/weather-icons.min.css';
 html {
 	height: 100%;
 	@include mat.theme(
@@ -36,14 +37,34 @@ body {
 	margin: 0;
 	height: 100%;
 }
-// This enables app root to be "fullscreen".
-html,
-body {
-	margin: 0;
-	height: 100%;
-}
 
+// TODO: move all following to proper theme customization file
 .debug {
 	border: 1px solid hotpink;
 	background-color: lightgreen;
+}
+
+:root {
+	@include mat.list-overrides(
+		(
+			list-item-one-line-container-height: 1rem,
+			list-item-two-line-container-height: 3.55rem,
+			list-item-label-text-size: 0.8rem,
+			list-item-label-text-weight: 450,
+			list-item-supporting-text-size: 1.5rem,
+			list-item-supporting-text-line-height: 2rem,
+		)
+	);
+}
+
+mat-list-item {
+	span[matListItemTitle] {
+		font-variant: small-caps;
+	}
+	.data-unit {
+		position: relative;
+		top: -0.5rem;
+		margin-left: 0.1rem;
+		font-size: 0.8rem;
+	}
 }
