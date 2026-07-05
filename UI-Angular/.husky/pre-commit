@@ -1,4 +1,4 @@
 cd UI-Angular
 # npm test
 npx lint-staged
-echo "Husky pre-commit ran"
+exit 1
