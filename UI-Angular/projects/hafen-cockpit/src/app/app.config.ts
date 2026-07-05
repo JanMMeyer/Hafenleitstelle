@@ -1,13 +1,13 @@
 import { ApplicationConfig, ErrorHandler } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
+import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { routes } from './app.routes';
-import { GlobalAppErrorHandler } from './core/errorHandling/globalAppErrorHandler.class';
-import { ErrorLoggingService } from './core/errorHandling/errorLogging.service';
-import { HttpClient, provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
-import { httpErrorMockingInterceptor } from './core/errorHandling/errorMocking/httpErrorMocking.interceptor';
 import { httpErrorLoggingInterceptor } from './core/errorHandling/errorLogging.interceptor';
+import { ErrorLoggingService } from './core/errorHandling/errorLogging.service';
+import { httpErrorMockingInterceptor } from './core/errorHandling/errorMocking/httpErrorMocking.interceptor';
 import { httpErrorRetryInterceptor } from './core/errorHandling/errorRetry.interceptor';
+import { GlobalAppErrorHandler } from './core/errorHandling/globalAppErrorHandler.class';
 
 // Erwägung: Http Interceptor der Header mit Session- und Request-UUID anreichert.
 // Anwendung: Error tracing, request tracking für busy state.

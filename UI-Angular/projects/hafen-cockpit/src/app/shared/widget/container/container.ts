@@ -2,15 +2,11 @@ import {
 	ChangeDetectionStrategy,
 	Component,
 	computed,
-	ElementRef,
 	inject,
 	input,
-	Input,
 	InputSignal,
 	OnDestroy,
 	Signal,
-	signal,
-	WritableSignal,
 } from '@angular/core';
 import { WidgetService } from '../widget.service';
 

@@ -1,4 +1,10 @@
-/.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+
+
 # Angular specific
 /dist/
 /out-tsc/
@@ -27,3 +33,4 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+

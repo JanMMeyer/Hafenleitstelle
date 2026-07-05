@@ -15,7 +15,7 @@ export class HttpError extends Error {
 // Only thrown by error logging endpoint, must be distinguished from other HttpErrors to avoid infinite loop of trying to log an logging error.
 export class ErrorLoggingError extends AggregateError {
 	public override readonly name: string = 'ErrorLoggingError';
-	constructor({ errorToLog, errorFromLogger }: { errorToLog: Error, errorFromLogger: Error}) {
+	constructor({ errorToLog, errorFromLogger }: { errorToLog: Error; errorFromLogger: Error }) {
 		super([errorFromLogger, errorToLog], errorFromLogger.message);
 	}
-}[]
+}

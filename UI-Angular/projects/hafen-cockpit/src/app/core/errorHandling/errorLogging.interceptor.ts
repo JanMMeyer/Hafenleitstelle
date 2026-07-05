@@ -1,7 +1,7 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpHandlerFn, HttpInterceptor, HttpRequest } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { catchError, Observable } from "rxjs";
-import { ErrorLoggingService, SKIP_LOGGING_INTERCEPTOR } from "./errorLogging.service";
+import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { catchError, Observable } from 'rxjs';
+import { ErrorLoggingService, SKIP_LOGGING_INTERCEPTOR } from './errorLogging.service';
 
 // @Injectable({
 // 	providedIn: 'root'
@@ -27,9 +27,11 @@ export function httpErrorLoggingInterceptor(
 ): Observable<HttpEvent<unknown>> {
 	const errorLoggingService: ErrorLoggingService = inject(ErrorLoggingService);
 	return handleHttp(request).pipe(
-		catchError((error: unknown, caught: Observable<HttpEvent<unknown>>) => {
+		catchError((error: unknown) => {
 			if (error instanceof HttpErrorResponse) {
-				if (!request.context.get(SKIP_LOGGING_INTERCEPTOR)) { errorLoggingService.logError(error); }
+				if (!request.context.get(SKIP_LOGGING_INTERCEPTOR)) {
+					errorLoggingService.logError(error);
+				}
 				throw error;
 			}
 			throw new TypeError('Unexpected argument type in ErrorLogging Interceptor', { cause: error });

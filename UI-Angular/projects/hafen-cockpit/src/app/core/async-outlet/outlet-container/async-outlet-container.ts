@@ -1,6 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
-	ChangeDetectionStrategy,
 	Component,
 	computed,
 	input,
@@ -10,17 +9,17 @@ import {
 	Signal,
 	signal,
 	TemplateRef,
-	WritableSignal
+	WritableSignal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { filter, Subject, switchMap, tap, timer } from 'rxjs';
+import { HTTP_RETRY_CONFIG } from '../../errorHandling/errorRetry.interceptor';
 import { HttpError } from '../../errorHandling/httpError.class';
 import { implyNever } from '../../fundamentals/implyNever';
 import { AsyncDataService } from '../../types/BusyDataSource.type';
 import { SwitchExhaustibleAsyncDataWrapper } from '../../types/SwitchExhaustibleAsyncDataWrapper.type';
 import { WithError } from '../../types/WithError.type';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HTTP_RETRY_CONFIG } from '../../errorHandling/errorRetry.interceptor';
 
 @Component({
 	selector: 'app-async-outlet-data',
@@ -57,17 +56,19 @@ export class AsyncOutletContainer<TData extends object> implements OnInit, OnDes
 	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
 
 	constructor() {
-		this.refreshTrigger$.pipe(
-			filter(() => !this.refreshBlocked()),
-			tap(() => {
-				this.refreshBlocked.set(true)
-				this.asyncDataService().fetchData();
-			}),
-			switchMap(() => timer(Math.floor(HTTP_RETRY_CONFIG.maxRetryDurationInMs / 3))),
-			takeUntilDestroyed(),
-		).subscribe(() => {
-			this.refreshBlocked.set(false);
-		});
+		this.refreshTrigger$
+			.pipe(
+				filter(() => !this.refreshBlocked()),
+				tap(() => {
+					this.refreshBlocked.set(true);
+					this.asyncDataService().fetchData();
+				}),
+				switchMap(() => timer(Math.floor(HTTP_RETRY_CONFIG.maxRetryDurationInMs / 3))),
+				takeUntilDestroyed(),
+			)
+			.subscribe(() => {
+				this.refreshBlocked.set(false);
+			});
 	}
 
 	public ngOnInit(): void {

@@ -10,4 +10,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 	changeDetection: ChangeDetectionStrategy.Eager,
 	styleUrl: './grid.scss',
 })
-export class WidgetGrid {}
+export class WidgetGrid {
+	public readonly gridRow: string = 'foo';
+}

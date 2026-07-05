@@ -1,11 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { computed, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
+import { inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { ErrorLoggingService } from '@cockpit/app/core/errorHandling/errorLogging.service';
 import { HttpError } from '@cockpit/app/core/errorHandling/httpError.class';
 import { WithError } from '@cockpit/app/core/types/WithError.type';
-import { catchError, finalize, Observable, of, Subscription, tap } from 'rxjs';
+import { catchError, finalize, Observable, of, Subscription } from 'rxjs';
 import { PegelDataDto } from './PegelData.dto';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { AsyncDataService } from '@cockpit/app/core/types/BusyDataSource.type';
 
 //  TODO location as injectable token
@@ -26,7 +25,7 @@ export class PegelWidgetService implements AsyncDataService<PegelDataDto> {
 	private readonly errorTracingService: ErrorLoggingService = new ErrorLoggingService();
 
 	// Hier könnte man auch ein protected Subscrion-Set in der base service class erwägen. Vorteil: nur eine property die batch unsubscibe erlaubt.
-	private pegelHistoryPngSubscription?: Subscription
+	private pegelHistoryPngSubscription?: Subscription;
 
 	// Bei komplexeren apps mit ngrx-artigem state management
 	// sollte man dieses nutzen umd ein generisches request tracking via UUID zu implementieren,
@@ -36,21 +35,21 @@ export class PegelWidgetService implements AsyncDataService<PegelDataDto> {
 
 	// Resouce option verworfen, da noch sehr bleeding edge, handhabung unklar.
 	// private readonly pegelCurrent = rxResource<WithError<PegelDataDto, HttpError>, undefined>...);
-	private readonly _pegelHistoryPng: WritableSignal<WithError<any, HttpError>> = signal(null);
+	private readonly _pegelHistoryPng: WritableSignal<WithError<unknown, HttpError>> = signal(null);
 
 	// Der "WithError" return type dient dazu die lokale handling von http errors zu "erzwingen"
 	// Dies sollte in einer base service class angelegt werden, oder noch besser in eine httpClient wrapper (siehe App Config).
-	public readonly data: Signal<WithError<PegelDataDto, HttpError> | undefined> = this._pegelHistoryPng.asReadonly();
+	public readonly data: Signal<WithError<unknown, HttpError> | undefined> =
+		this._pegelHistoryPng.asReadonly();
 	// public readonly isBusyLoading: Signal<boolean> = computed(() => this._isPegelCurrentLoading() || this._isPegelHistoryPngLoading());
 	public readonly isBusy: Signal<boolean> = this._isPegelHistoryPngLoading.asReadonly();
-
-
 
 	public fetchData(): void {
 		this.cancelFetchDataRequests();
 
-		this.pegelHistoryPngSubscription = this.fetchPegelHistoryPng()
-			.subscribe((pegelHistoryPng) => this._pegelHistoryPng.set(pegelHistoryPng));
+		this.pegelHistoryPngSubscription = this.fetchPegelHistoryPng().subscribe((pegelHistoryPng) =>
+			this._pegelHistoryPng.set(pegelHistoryPng),
+		);
 	}
 
 	public destroy(): void {
@@ -62,22 +61,16 @@ export class PegelWidgetService implements AsyncDataService<PegelDataDto> {
 		this._isPegelHistoryPngLoading.set(false);
 	}
 
-
-
-
-	private fetchPegelHistoryPng(): Observable<WithError<any, HttpError>> {
+	private fetchPegelHistoryPng(): Observable<WithError<unknown, HttpError>> {
 		this._isPegelHistoryPngLoading.set(true);
 		return this.http.get(this.pegelHistoryPngUrl).pipe(
 			// TODO: error catch protected in base service class.
 			catchError((error: unknown) => {
-				if (!(error instanceof HttpErrorResponse)) throw new Error('Unexpected argument type in catchError', { cause: error });
+				if (!(error instanceof HttpErrorResponse))
+					throw new Error('Unexpected argument type in catchError', { cause: error });
 				return of(new HttpError(error.error, error.status));
 			}),
 			finalize(() => this._isPegelHistoryPngLoading.set(false)),
 		);
 	}
-
-
-
-
 }

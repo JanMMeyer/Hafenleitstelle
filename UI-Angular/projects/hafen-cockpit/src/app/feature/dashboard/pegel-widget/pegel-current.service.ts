@@ -1,11 +1,9 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { computed, inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
-import { ErrorLoggingService } from '@cockpit/app/core/errorHandling/errorLogging.service';
+import { inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { HttpError } from '@cockpit/app/core/errorHandling/httpError.class';
 import { WithError } from '@cockpit/app/core/types/WithError.type';
-import { catchError, finalize, Observable, of, Subscription, tap } from 'rxjs';
+import { catchError, finalize, Observable, of, Subscription } from 'rxjs';
 import { PegelDataDto } from './PegelData.dto';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { AsyncDataService } from '@cockpit/app/core/types/BusyDataSource.type';
 
 //  TODO location as injectable token
@@ -29,34 +27,36 @@ export class PegelWidgetService implements AsyncDataService<PegelDataDto> {
 
 	private readonly http: HttpClient = inject(HttpClient);
 
-	// Hier könnte man auch ein protected Subscrion-Set in der base service class erwägen. Vorteil: nur eine property die batch unsubscibe erlaubt.
-	private pegelCurrentSubscription?: Subscription
+	// Hier könnte man auch ein protected Subscrion-Set in der base service class erwägen. Vorteil: nur eine property die batch unsubscribe erlaubt.
+	private pegelCurrentSubscription?: Subscription;
 
 	// Bei komplexeren apps mit ngrx-artigem state management
 	// sollte man dieses nutzen umd ein generisches request tracking via UUID zu implementieren,
 	// um nicht für jeden call ein eigenen signal tracken zu müssen.
 	// Anwendung: wenn z.B. buttons in einer parent component inaktiv sein müssen solange ein child busy ist.
-	private readonly _isPegelCurrentLoading: WritableSignal<boolean> = signal(false)
+	private readonly _isPegelCurrentLoading: WritableSignal<boolean> = signal(false);
 
 	// Resouce option verworfen, da noch sehr bleeding edge, handhabung unklar.
 	// private readonly pegelCurrent = rxResource<WithError<PegelDataDto, HttpError>, undefined>...);
-	private readonly _pegelCurrent: WritableSignal<WithError<PegelDataDto, HttpError> | undefined> = signal(undefined);
+	private readonly _pegelCurrent: WritableSignal<WithError<PegelDataDto, HttpError> | undefined> =
+		signal(undefined);
 
 	// Der "WithError" return type dient dazu die lokale handling von http errors zu "erzwingen"
 	// Dies sollte in einer base service class angelegt werden, oder noch besser in eine httpClient wrapper (siehe App Config).
-	public readonly data: Signal<WithError<PegelDataDto, HttpError> | undefined> = this._pegelCurrent.asReadonly();
+	public readonly data: Signal<WithError<PegelDataDto, HttpError> | undefined> =
+		this._pegelCurrent.asReadonly();
 	// public readonly isBusyLoading: Signal<boolean> = computed(() => this._isPegelCurrentLoading() || this._isPegelHistoryPngLoading());
 	public readonly isBusy: Signal<boolean> = this._isPegelCurrentLoading.asReadonly();
-
-
 
 	public fetchData(): void {
 		this.cancelFetchDataRequests();
 
-		this.pegelCurrentSubscription = this.fetchPegelCurrent()
-			.subscribe((pegelCurrent) => this._pegelCurrent.set(pegelCurrent));
+		this.pegelCurrentSubscription = this.fetchPegelCurrent().subscribe((pegelCurrent) =>
+			this._pegelCurrent.set(pegelCurrent),
+		);
 	}
 
+	private test: any = 'test';
 	public destroy(): void {
 		this.cancelFetchDataRequests();
 	}
@@ -66,18 +66,17 @@ export class PegelWidgetService implements AsyncDataService<PegelDataDto> {
 		this._isPegelCurrentLoading.set(false);
 	}
 
-
-	private fetchPegelCurrent(): Observable<WithError<any, HttpError>> {
+	private fetchPegelCurrent(): Observable<WithError<PegelDataDto, HttpError>> {
 		this._isPegelCurrentLoading.set(true);
 		console.log('fetchPegelCurrent');
-		return this.http.get(this.pegelCurrentUrl).pipe(
+		return this.http.get<PegelDataDto>(this.pegelCurrentUrl).pipe(
 			// TODO: error catch protected in base service class or better in a httpClient wrapper.
 			catchError((error: unknown) => {
-				if (!(error instanceof HttpErrorResponse)) throw new Error('Unexpected argument type in catchError', { cause: error });
+				if (!(error instanceof HttpErrorResponse))
+					throw new Error('Unexpected argument type in catchError', { cause: error });
 				return of(new HttpError(error.error, error.status));
 			}),
 			finalize(() => this._isPegelCurrentLoading.set(false)),
 		);
 	}
-
 }
