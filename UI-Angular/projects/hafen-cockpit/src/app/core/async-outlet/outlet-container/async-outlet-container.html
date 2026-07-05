@@ -1,5 +1,5 @@
 <button (click)="refresh()" [disabled]="refreshBlocked()">Refresh</button>
-@if (asyncDataService().isBusy()) {
+@if (asyncDataService().isLoading()) {
 	<mat-progress-bar mode="indeterminate"></mat-progress-bar>
 }
 
@@ -10,12 +10,14 @@
 	}
 	@case ('error') {
 		<span
-			>Es gibt ein Problem mit der Serververbindung, bitte warten sie ein paar minuten und
-			nutzen die Refresh-Funktion des Widgets.</span
+			>Es gibt ein Problem mit der Serververbindung, bitte warten sie ein paar minuten und nutzen
+			die Refresh-Funktion des Widgets.</span
 		>
 	}
 	@case ('data') {
 		<ng-container *ngTemplateOutlet="contentTemplate(); context: { data: wrappedData.value }" />
 	}
+	<!-- For some reason prettier removes the never(), therefore: -->
+	<!-- prettier-ignore  -->
 	@default never(wrappedData);
 }

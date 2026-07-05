@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
 	selector: 'app-widget-grid',
@@ -7,7 +7,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 		class: 'debug',
 	},
 	templateUrl: './grid.html',
-	changeDetection: ChangeDetectionStrategy.Eager,
 	styleUrl: './grid.scss',
 })
 export class WidgetGrid {

@@ -1,5 +1,15 @@
-import { ComponentRef, Directive, effect, EffectRef, inject, input, InputSignal, TemplateRef, ViewContainerRef } from '@angular/core';
-import { AsyncDataService } from '../types/BusyDataSource.type';
+import {
+	ComponentRef,
+	Directive,
+	effect,
+	EffectRef,
+	inject,
+	input,
+	InputSignal,
+	TemplateRef,
+	ViewContainerRef,
+} from '@angular/core';
+import { AsyncDataSource } from '../types/AsyncDataSource.type';
 import { AsyncOutletContainer } from './outlet-container/async-outlet-container';
 import { setCompRefInputTyped } from '../fundamentals/setCompRefInputTyped';
 
@@ -15,22 +25,26 @@ import { setCompRefInputTyped } from '../fundamentals/setCompRefInputTyped';
 // but then you need a custom type guard... for now: just wrap it in an object.
 // Consider: above suggestion.
 export class AsyncOutlet<TData extends object> {
-
 	private readonly templateRef: TemplateRef<{ data: TData }> = inject(TemplateRef<{ data: TData }>);
 	private readonly vcr: ViewContainerRef = inject(ViewContainerRef);
-	private readonly effectRef: EffectRef
+	private readonly effectRef: EffectRef;
 
-	public readonly appAsyncOutlet: InputSignal<AsyncDataService<TData>> = input.required();
+	public readonly appAsyncOutlet: InputSignal<AsyncDataSource<TData>> = input.required();
 
 	constructor() {
 		this.effectRef = effect(() => {
-			const containerRef: ComponentRef<AsyncOutletContainer<TData>> = this.vcr.createComponent(AsyncOutletContainer<TData>);
+			const asyncOutlet = this.appAsyncOutlet(); //<- triggers effect when set
+
+			if (!asyncOutlet) return;
+			const containerRef: ComponentRef<AsyncOutletContainer<TData>> = this.vcr.createComponent(
+				AsyncOutletContainer<TData>,
+			);
 			// not typesafe ...
 			// frameRef.setInput('contentTemplate', () => this.templateRef);
 			// frameRef.setInput('asyncDataService', () => this.appAsyncOutlet());
 			// ... custom wrapper to the rescue:
 			setCompRefInputTyped(containerRef, 'contentTemplate', this.templateRef);
-			setCompRefInputTyped(containerRef, 'asyncDataService',this.appAsyncOutlet());
+			setCompRefInputTyped(containerRef, 'asyncDataService', asyncOutlet);
 		});
 	}
 
@@ -38,5 +52,3 @@ export class AsyncOutlet<TData extends object> {
 		this.effectRef.destroy();
 	}
 }
-
-

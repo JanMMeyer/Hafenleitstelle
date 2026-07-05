@@ -17,7 +17,7 @@ import { filter, Subject, switchMap, tap, timer } from 'rxjs';
 import { HTTP_RETRY_CONFIG } from '../../errorHandling/errorRetry.interceptor';
 import { HttpError } from '../../errorHandling/httpError.class';
 import { implyNever } from '../../fundamentals/implyNever';
-import { AsyncDataService } from '../../types/BusyDataSource.type';
+import { AsyncDataSource } from '../../types/AsyncDataSource.type';
 import { SwitchExhaustibleAsyncDataWrapper } from '../../types/SwitchExhaustibleAsyncDataWrapper.type';
 import { WithError } from '../../types/WithError.type';
 
@@ -35,7 +35,7 @@ import { WithError } from '../../types/WithError.type';
 export class AsyncOutletContainer<TData extends object> implements OnInit, OnDestroy {
 	private readonly refreshTrigger$: Subject<void> = new Subject<void>();
 
-	public readonly asyncDataService: InputSignal<AsyncDataService<TData>> = input.required();
+	public readonly asyncDataService: InputSignal<AsyncDataSource<TData>> = input.required();
 	public readonly contentTemplate: InputSignal<TemplateRef<{ data: TData }>> = input.required();
 
 	// public readonly mode: WritableSignal<'loading' | 'error' | 'data'> = signal<'loading' | 'error' | 'data'>('loading');
@@ -61,7 +61,7 @@ export class AsyncOutletContainer<TData extends object> implements OnInit, OnDes
 				filter(() => !this.refreshBlocked()),
 				tap(() => {
 					this.refreshBlocked.set(true);
-					this.asyncDataService().fetchData();
+					this.asyncDataService().load();
 				}),
 				switchMap(() => timer(Math.floor(HTTP_RETRY_CONFIG.maxRetryDurationInMs / 3))),
 				takeUntilDestroyed(),
@@ -72,7 +72,7 @@ export class AsyncOutletContainer<TData extends object> implements OnInit, OnDes
 	}
 
 	public ngOnInit(): void {
-		this.asyncDataService().fetchData();
+		this.asyncDataService().load();
 	}
 
 	public refresh(): void {

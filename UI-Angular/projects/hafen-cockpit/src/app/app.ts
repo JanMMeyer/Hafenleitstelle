@@ -1,9 +1,9 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { HttpErrorMockingControl } from '@cockpit/app/core/errorHandling/errorMocking/httpErrorMockingControl.component';
-import { WidgetGrid } from './shared/widget/grid/grid';
 import { WidgetContainer } from '@cockpit/app/shared/widget/container/container';
 import { PegelWidget } from './feature/dashboard/pegel-widget/pegel-widget';
-import { PegelWidgetService } from './feature/dashboard/pegel-widget/pegel-current.service';
+import { WidgetGrid } from './shared/widget/grid/grid';
+import { RouterOutlet } from '@angular/router';
 
 /* ---- AI disclaimer ----
 
@@ -22,14 +22,22 @@ and finding the most elegant solution for passing the context to the content of 
 
 @Component({
 	selector: 'app-root',
-	imports: [WidgetGrid, WidgetContainer, HttpErrorMockingControl, PegelWidget],
-	providers: [PegelWidgetService],
+	imports: [HttpErrorMockingControl, RouterOutlet],
 	host: {
 		class: 'debug',
 	},
-	templateUrl: './app.html',
-	changeDetection: ChangeDetectionStrategy.Eager,
-	styleUrl: './app.scss',
+	template: `
+		<router-outlet />
+		<app-http-error-period-control />
+	`,
+	styles: `
+		:host {
+			box-sizing: border-box;
+			padding: 1rem;
+			display: block;
+			height: 100%;
+		}
+	`,
 })
 export class App {
 	protected readonly title = signal('Hafen-Cockpit');

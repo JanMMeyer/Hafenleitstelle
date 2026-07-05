@@ -4,7 +4,7 @@ import { ErrorMockingService, MockHttpErrorStatus } from './errorMocking.service
 @Component({
 	selector: 'app-http-error-period-control',
 	template: `
-			<fieldset>
+		<fieldset>
 			<legend>HTTP error type</legend>
 			<label>
 				<input
@@ -27,24 +27,24 @@ import { ErrorMockingService, MockHttpErrorStatus } from './errorMocking.service
 		</fieldset>
 		<label for="httpErrorPeriod">HTTP error period: {{ errorMocking.httpErrorPeriod() }}</label>
 		<input
-				name="httpErrorPeriod"
-				type="range"
-				min="0"
-				max="5"
-				step="1"
-				[value]="errorMocking.httpErrorPeriod()"
-				(input)="onPeriodChange($event)"
-			/>
+			name="httpErrorPeriod"
+			type="range"
+			min="0"
+			max="5"
+			step="1"
+			[value]="errorMocking.httpErrorPeriod()"
+			(input)="onPeriodChange($event)"
+		/>
 		<label for="httpLatency">HTTP latency: {{ errorMocking.httpLatency() }}</label>
 		<input
-				name="httpLatency"
-				type="range"
-				min="0"
-				max="3000"
-				step="200"
-				[value]="errorMocking.httpLatency()"
-				(input)="onLatencyChange($event)"
-			/>
+			name="httpLatency"
+			type="range"
+			min="0"
+			max="3000"
+			step="200"
+			[value]="errorMocking.httpLatency()"
+			(input)="onLatencyChange($event)"
+		/>
 
 		<button type="button" (click)="onThrowRuntimeError()">Throw App Error</button>
 	`,
@@ -61,7 +61,6 @@ import { ErrorMockingService, MockHttpErrorStatus } from './errorMocking.service
 			padding: 0.5rem;
 			background-color: lightsalmon;
 			border-radius: 0.5rem;
-
 		}
 
 		input[type='range'] {
@@ -76,7 +75,6 @@ import { ErrorMockingService, MockHttpErrorStatus } from './errorMocking.service
 			gap: 0.75rem;
 		}
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HttpErrorMockingControl {
 	protected readonly errorMocking = inject(ErrorMockingService);

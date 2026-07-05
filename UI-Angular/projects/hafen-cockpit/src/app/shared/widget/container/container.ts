@@ -1,5 +1,4 @@
 import {
-	ChangeDetectionStrategy,
 	Component,
 	computed,
 	inject,
@@ -19,9 +18,7 @@ import { WidgetService } from '../widget.service';
 		'[style.grid-row]': 'gridRow()',
 		'[style.grid-column]': 'gridColumn()',
 	},
-	templateUrl: './container.html',
-	styleUrl: './container.scss',
-	changeDetection: ChangeDetectionStrategy.OnPush,
+	template: '<ng-content></ng-content>',
 })
 export class WidgetContainer implements OnDestroy {
 	protected readonly widgetService = inject(WidgetService);

@@ -1,8 +1,0 @@
-// App root including border should be "fullscreen", in order to control of all visible aspects via angular -> no hidden style effects
-:host {
-	// default 'box-sizing: content-box;' would set content box w/o padding to 100%, causing overlap due to padding
-	box-sizing: border-box;
-	padding: 1rem;
-	display: block;
-	height: 100%;
-}

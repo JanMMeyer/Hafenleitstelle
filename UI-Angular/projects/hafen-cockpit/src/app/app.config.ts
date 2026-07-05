@@ -25,7 +25,6 @@ export const appConfig: ApplicationConfig = {
 		// Interceptors are executed in the order they are provided for a REQUEST. Meaning that the LAST interceptor sees the RESPONSE first.
 		//                                  REQEST execution order ->                               <- RESPONSE execution order
 		provideHttpClient(
-			withXhr(),
 			withInterceptors([
 				httpErrorLoggingInterceptor,
 				httpErrorRetryInterceptor,

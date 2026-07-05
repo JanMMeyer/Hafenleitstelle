@@ -5,12 +5,12 @@ import { HttpError } from '@cockpit/app/core/errorHandling/httpError.class';
 import { WithError } from '@cockpit/app/core/types/WithError.type';
 import { catchError, finalize, Observable, of, Subscription } from 'rxjs';
 import { PegelDataDto } from './PegelData.dto';
-import { AsyncDataService } from '@cockpit/app/core/types/BusyDataSource.type';
+import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 
 //  TODO location as injectable token
 // 'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/${location}/W/measurements.png?start=P7D&width=440&height=220';
 @Injectable()
-export class PegelWidgetService implements AsyncDataService<PegelDataDto> {
+export class PegelWidgetService {
 	private readonly baseApiUrl: string =
 		'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/';
 	private readonly locationUUID: string = 'd488c5cc-4de9-4631-8ce1-0db0e700b546';
@@ -42,9 +42,9 @@ export class PegelWidgetService implements AsyncDataService<PegelDataDto> {
 	public readonly data: Signal<WithError<unknown, HttpError> | undefined> =
 		this._pegelHistoryPng.asReadonly();
 	// public readonly isBusyLoading: Signal<boolean> = computed(() => this._isPegelCurrentLoading() || this._isPegelHistoryPngLoading());
-	public readonly isBusy: Signal<boolean> = this._isPegelHistoryPngLoading.asReadonly();
+	public readonly isLoading: Signal<boolean> = this._isPegelHistoryPngLoading.asReadonly();
 
-	public fetchData(): void {
+	public load(): void {
 		this.cancelFetchDataRequests();
 
 		this.pegelHistoryPngSubscription = this.fetchPegelHistoryPng().subscribe((pegelHistoryPng) =>
