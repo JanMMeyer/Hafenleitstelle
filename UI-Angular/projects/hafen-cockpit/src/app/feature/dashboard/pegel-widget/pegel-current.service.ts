@@ -56,7 +56,6 @@ export class PegelWidgetService implements AsyncDataService<PegelDataDto> {
 		);
 	}
 
-	private test: any = 'test';
 	public destroy(): void {
 		this.cancelFetchDataRequests();
 	}

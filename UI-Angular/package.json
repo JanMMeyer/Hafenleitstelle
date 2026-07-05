@@ -7,7 +7,7 @@
 		"build": "ng build",
 		"watch": "ng build --watch --configuration development",
 		"test": "ng test",
-		"prepare": "npx husky install"
+		"prepare": "husky "
 	},
 	"private": true,
 	"packageManager": "npm@10.9.4",
@@ -30,7 +30,9 @@
 		"@eslint/js": "^10.0.1",
 		"eslint": "^10.6.0",
 		"eslint-plugin-unused-imports": "^4.4.1",
+		"husky": "^9.1.7",
 		"jsdom": "^28.0.0",
+		"lint-staged": "^17.0.8",
 		"prettier": "^3.8.1",
 		"typescript": "~6.0.3",
 		"typescript-eslint": "^8.62.1",
