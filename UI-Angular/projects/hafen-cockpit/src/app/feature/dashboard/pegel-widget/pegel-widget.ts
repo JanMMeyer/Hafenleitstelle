@@ -1,20 +1,47 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	DestroyRef,
+	inject,
+	signal,
+	WritableSignal,
+} from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { AsyncOutlet } from '@cockpit/app/core/async-outlet/async-outlet';
-import { WidgetContainer } from '@cockpit/app/shared/widget/container/widget-container';
+import { capRefreshBlock } from '@cockpit/app/shared/capRefreshBlock.utils';
+import { BaseWidget } from 'gridstack/dist/angular';
+import { Subject } from 'rxjs';
+import { DashboardService } from '../dashboard.service';
 import { PegelWidgetService } from './pegel-current.service';
 import { PegelRelationPipe } from './pegel-relation.pipe';
-import { DatePipe } from '@angular/common';
-import { BaseWidget } from 'gridstack/dist/angular';
 
 @Component({
 	selector: 'app-pegel-widget',
-	imports: [AsyncOutlet, MatCardModule, MatListModule, PegelRelationPipe, DatePipe],
+	imports: [
+		AsyncOutlet,
+		MatCardModule,
+		MatListModule,
+		PegelRelationPipe,
+		DatePipe,
+		MatIconModule,
+		MatButtonModule,
+	],
 	providers: [PegelWidgetService],
 	template: `
 		<mat-card>
 			<mat-card-content>
+				<button
+					class="top-right show-hover-only fade-parent-hover"
+					matMiniFab
+					(click)="refresh()"
+					[disabled]="refreshBlocked()"
+				>
+					<mat-icon>refresh</mat-icon>
+				</button>
 				<mat-list *appAsyncOutlet="pegelService; showRefresh: false; let pegel = data">
 					<mat-list-item>
 						Stand&nbsp;{{ pegel.currentMeasurement.timestamp | date: 'dd.MM.yy HH:mm' }}
@@ -45,9 +72,35 @@ import { BaseWidget } from 'gridstack/dist/angular';
 	styles: `
 		mat-card {
 			height: 100%;
+			mat-card-content {
+				position: relative;
+				button.top-right {
+					top: 1rem;
+					right: 1rem;
+				}
+			}
 		}
 	`,
 })
 export class PegelWidget extends BaseWidget {
+	private readonly refreshTrigger$: Subject<void> = new Subject<void>();
+	private readonly destroyRef = inject(DestroyRef);
+
+	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
 	public readonly pegelService: PegelWidgetService = inject(PegelWidgetService);
+	public readonly dashboardService: DashboardService = inject(DashboardService);
+
+	constructor() {
+		super();
+
+		capRefreshBlock({
+			isLoading$: this.pegelService.isLoading$,
+			refreshBlocked: this.refreshBlocked,
+			destroyRef: this.destroyRef,
+		});
+	}
+
+	public refresh(): void {
+		this.pegelService.load();
+	}
 }

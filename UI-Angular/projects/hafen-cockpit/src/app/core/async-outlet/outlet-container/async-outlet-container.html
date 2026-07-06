@@ -1,9 +1,14 @@
 @if (showRefresh()) {
-	<button class="refresh-button" matMiniFab (click)="refresh()" [disabled]="refreshBlocked()">
+	<button
+		class="top-right show-hover-only fade-parent-hover"
+		matMiniFab
+		(click)="refresh()"
+		[disabled]="refreshBlocked()"
+	>
 		<mat-icon>refresh</mat-icon>
 	</button>
 }
-@if (asyncDataService().isLoading()) {
+@if (asyncDataService().isLoading$ | async) {
 	<div class="progress-bar-container">
 		<mat-progress-bar mode="indeterminate"></mat-progress-bar>
 	</div>
@@ -16,8 +21,8 @@
 	}
 	@case ('error') {
 		<span
-			>Es gibt ein Problem mit der Serververbindung, bitte warten sie ein paar minuten und nutzen
-			die Refresh-Funktion des Widgets.</span
+			>Es gibt ein Problem mit der Serververbindung, bitte versuchen sie es in ein paar minuten
+			erneut.</span
 		>
 	}
 	@case ('data') {

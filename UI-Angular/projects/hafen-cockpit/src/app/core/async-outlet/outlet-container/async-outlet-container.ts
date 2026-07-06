@@ -1,7 +1,9 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
 import {
 	Component,
 	computed,
+	DestroyRef,
+	inject,
 	input,
 	InputSignal,
 	OnDestroy,
@@ -11,18 +13,17 @@ import {
 	TemplateRef,
 	WritableSignal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { filter, Subject, switchMap, tap, timer } from 'rxjs';
-import { HTTP_RETRY_CONFIG } from '../../errorHandling/errorRetry.interceptor';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { capRefreshBlock } from '@cockpit/app/shared/capRefreshBlock.utils';
+import { Subject } from 'rxjs';
 import { HttpError } from '../../errorHandling/httpError.class';
 import { implyNever } from '../../fundamentals/implyNever';
 import { AsyncDataSource } from '../../types/AsyncDataSource.type';
 import { SwitchExhaustibleAsyncDataWrapper } from '../../types/SwitchExhaustibleAsyncDataWrapper.type';
 import { WithError } from '../../types/WithError.type';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-async-outlet-data',
@@ -32,6 +33,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 		MatIconModule,
 		MatProgressSpinnerModule,
 		NgTemplateOutlet,
+		AsyncPipe,
 	],
 	templateUrl: './async-outlet-container.html',
 	styles: `
@@ -42,35 +44,24 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 			.progress-bar-container {
 				position: absolute;
-				bottom: 0;
+				top: 0;
 				left: 0;
 				right: 0;
 				box-sizing: border-box;
-				padding: 2px;
-			}
-			mat-progress-bar {
-				border-radius: 2px;
-				z-index: 2;
-			}
+				padding: 0 55px 0 5px;
 
-			.refresh-button {
-				position: absolute;
-				opacity: 0;
-				top: 0;
-				right: 0rem;
-				z-index: 2;
-				&:hover {
-					opacity: 1;
+				mat-progress-bar {
+					border-radius: 2px;
+					z-index: 2;
 				}
-			}
-			&:hover .refresh-button:not(:hover) {
-				opacity: 0.5;
 			}
 		}
 	`,
 })
 export class AsyncOutletContainer<TData extends object> implements OnInit, OnDestroy {
 	private readonly refreshTrigger$: Subject<void> = new Subject<void>();
+	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
+	private readonly destroyRef = inject(DestroyRef);
 
 	public readonly asyncDataService: InputSignal<AsyncDataSource<TData>> = input.required();
 	public readonly contentTemplate: InputSignal<TemplateRef<{ data: TData }>> = input.required();
@@ -91,30 +82,18 @@ export class AsyncOutletContainer<TData extends object> implements OnInit, OnDes
 			}
 		});
 
-	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
-
-	constructor() {
-		this.refreshTrigger$
-			.pipe(
-				filter(() => !this.refreshBlocked()),
-				tap(() => {
-					this.refreshBlocked.set(true);
-					this.asyncDataService().load();
-				}),
-				switchMap(() => timer(Math.floor(HTTP_RETRY_CONFIG.maxRetryDurationInMs / 3))),
-				takeUntilDestroyed(),
-			)
-			.subscribe(() => {
-				this.refreshBlocked.set(false);
-			});
-	}
-
 	public ngOnInit(): void {
+		capRefreshBlock({
+			isLoading$: this.asyncDataService().isLoading$,
+			refreshBlocked: this.refreshBlocked,
+			destroyRef: this.destroyRef,
+		});
+
 		this.asyncDataService().load();
 	}
 
 	public refresh(): void {
-		this.refreshTrigger$.next();
+		this.asyncDataService().load();
 	}
 
 	public ngOnDestroy(): void {

@@ -74,3 +74,20 @@ mat-list-item {
 	padding: 2px;
 	// box-sizing: border-box;
 }
+
+.top-right {
+	position: absolute !important;
+	top: 0;
+	right: 0;
+	z-index: 2;
+}
+
+.show-hover-only {
+	opacity: 0;
+	&:hover {
+		opacity: 1;
+	}
+}
+*:hover > .fade-parent-hover:not(:hover) {
+	opacity: 0.5;
+}

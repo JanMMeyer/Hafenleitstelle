@@ -16,7 +16,10 @@ import { WeatherAlertWidgetService } from './weather-alert.service';
 				<ng-container *appAsyncOutlet="weatherAlertService; let weatherData = data">
 					@let alerts = weatherData.alerts;
 					@for (alert of alerts; track alert.id) {
-						<app-weather-alert [weatherAlert]="alert"></app-weather-alert>
+						<app-weather-alert
+							[weatherAlert]="alert"
+							[alertLocation]="weatherData.location"
+						></app-weather-alert>
 					}
 				</ng-container>
 			</mat-card-content>

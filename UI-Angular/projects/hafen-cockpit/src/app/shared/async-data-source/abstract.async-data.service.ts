@@ -4,17 +4,32 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpError } from '@cockpit/app/core/errorHandling/httpError.class';
 import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { WithError } from '@cockpit/app/core/types/WithError.type';
-import { catchError, finalize, Observable, of, Subject, switchMap, take, tap } from 'rxjs';
+import {
+	BehaviorSubject,
+	catchError,
+	filter,
+	finalize,
+	Observable,
+	of,
+	Subject,
+	switchMap,
+	take,
+	tap,
+} from 'rxjs';
 
 @Injectable()
 export abstract class AsyncDataSourceService<
 	TData extends object,
 > implements AsyncDataSource<TData> {
+	static refreshBlocked() {
+		throw new Error('Method not implemented.');
+	}
+
 	private readonly destroyRef = inject(DestroyRef);
 
 	private readonly loadTrigger$: Subject<void> = new Subject<void>();
 
-	private readonly _isLoading: WritableSignal<boolean> = signal(false);
+	private readonly _isLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 	private readonly _data: WritableSignal<WithError<TData, HttpError> | undefined> =
 		signal(undefined);
 
@@ -22,7 +37,7 @@ export abstract class AsyncDataSourceService<
 	// sollte man dieses nutzen umd ein generisches request tracking via UUID zu implementieren,
 	// um nicht für jeden call ein eigenen signal tracken zu müssen.
 	// Anwendung: wenn z.B. buttons in einer parent component inaktiv sein müssen solange ein child busy ist.
-	public readonly isLoading: Signal<boolean> = this._isLoading.asReadonly();
+	public readonly isLoading$: Observable<boolean> = this._isLoading.asObservable();
 	// Der "WithError" return type dient dazu die lokale handling von http errors zu "erzwingen"
 	public readonly data: Signal<WithError<TData, HttpError> | undefined> = this._data.asReadonly();
 
@@ -32,7 +47,7 @@ export abstract class AsyncDataSourceService<
 	constructor() {
 		this.loadTrigger$
 			.pipe(
-				tap(() => this._isLoading.set(true)),
+				tap(() => this._isLoading.next(true)),
 				switchMap(() =>
 					this.fetchData().pipe(
 						catchError((error: unknown) => {
@@ -46,7 +61,7 @@ export abstract class AsyncDataSourceService<
 				takeUntilDestroyed(this.destroyRef),
 			)
 			.subscribe((data: WithError<TData, HttpError>) => {
-				this._isLoading.set(false);
+				this._isLoading.next(false);
 				this._data.set(data);
 			});
 	}

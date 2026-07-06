@@ -1,12 +1,23 @@
-import { Component, Signal, signal, viewChild, ViewChild } from '@angular/core';
+import { Component, inject, signal, Signal, viewChild, WritableSignal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { LocalStorageAccessor } from '@cockpit/app/core/local-storage/local-storage-ascessor.class';
 import { Serializable } from '@cockpit/app/core/types/Basic.type';
-import { GridStackOptions, GridStackWidget } from 'gridstack';
+import { GridStackWidget } from 'gridstack';
 import { GridstackComponent, NgGridStackOptions, NgGridStackWidget } from 'gridstack/dist/angular';
+import { DashboardService } from './dashboard.service';
 @Component({
 	selector: 'app-dashboard',
-	imports: [GridstackComponent],
+	imports: [GridstackComponent, MatButtonModule, MatIconModule],
 	template: `
+		<button
+			class="top-right show-hover-only fade-parent-hover"
+			matMiniFab
+			(click)="refreshAll()"
+			[disabled]="refreshBlocked()"
+		>
+			<mat-icon>refresh</mat-icon>
+		</button>
 		<gridstack #widgetGrid [options]="gridOptions" (change)="onGridChange()"></gridstack>
 	`,
 	styles: `
@@ -14,11 +25,16 @@ import { GridstackComponent, NgGridStackOptions, NgGridStackWidget } from 'grids
 			background: plum;
 		}
 		:host {
+			position: relative;
 			height: 100%;
 		}
 	`,
 })
 export class Dashboard {
+	// todo: make dashboard widget class that extends BaseWidget and inject dashboardService, registering and unregistering widgets
+	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
+	public readonly dashboardService: DashboardService = inject(DashboardService);
+
 	private readonly defaultGridStackWidgets: NgGridStackWidget[] = [
 		{ x: 0, y: 0, w: 3, h: 4, selector: 'app-weather-widget' },
 		{ x: 3, y: 0, w: 3, h: 4, selector: 'app-pegel-widget' },
@@ -41,6 +57,10 @@ export class Dashboard {
 
 	public onGridChange() {
 		this.saveGridLayout();
+	}
+
+	public refreshAll() {
+		this.dashboardService.refreshAllTrigger$.next();
 	}
 
 	// Save layout to localStorage
