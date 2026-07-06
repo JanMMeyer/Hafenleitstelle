@@ -5,6 +5,7 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+@import 'gridstack/dist/gridstack.min.css';
 @import 'weather-icons/css/weather-icons.min.css';
 html {
 	height: 100%;
@@ -67,4 +68,9 @@ mat-list-item {
 		margin-left: 0.1rem;
 		font-size: 0.8rem;
 	}
+}
+
+.grid-stack-item-content {
+	padding: 2px;
+	// box-sizing: border-box;
 }

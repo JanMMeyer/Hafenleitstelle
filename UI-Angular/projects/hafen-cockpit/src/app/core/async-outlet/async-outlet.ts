@@ -42,10 +42,12 @@ export class AsyncOutlet<TData extends object> {
 	private readonly effectRef: EffectRef;
 
 	public readonly appAsyncOutlet: InputSignal<AsyncDataSource<TData>> = input.required();
+	public readonly appAsyncOutletShowRefresh: InputSignal<boolean> = input(true);
 
 	constructor() {
 		this.effectRef = effect(() => {
-			const asyncOutlet = this.appAsyncOutlet(); //<- triggers effect when set
+			const showRefresh = this.appAsyncOutletShowRefresh();
+			const asyncOutlet = this.appAsyncOutlet();
 
 			if (!asyncOutlet) return;
 			const containerRef: ComponentRef<AsyncOutletContainer<TData>> = this.vcr.createComponent(
@@ -57,6 +59,7 @@ export class AsyncOutlet<TData extends object> {
 			// ... custom wrapper to the rescue:
 			setCompRefInputTyped(containerRef, 'contentTemplate', this.templateRef);
 			setCompRefInputTyped(containerRef, 'asyncDataService', asyncOutlet);
+			setCompRefInputTyped(containerRef, 'showRefresh', showRefresh);
 		});
 	}
 

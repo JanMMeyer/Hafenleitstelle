@@ -45,5 +45,6 @@
     "UI-Angular/.husky/": true,
     "UI-Angular/dist/": true
   },
-  "hidefiles.selectedProfile": "Default"
+  "hidefiles.selectedProfile": "Default",
+  "cSpell.words": ["gridstack", "pegel"]
 }

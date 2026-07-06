@@ -74,6 +74,7 @@ export class AsyncOutletContainer<TData extends object> implements OnInit, OnDes
 
 	public readonly asyncDataService: InputSignal<AsyncDataSource<TData>> = input.required();
 	public readonly contentTemplate: InputSignal<TemplateRef<{ data: TData }>> = input.required();
+	public readonly showRefresh: InputSignal<boolean> = input(true);
 
 	// public readonly mode: WritableSignal<'loading' | 'error' | 'data'> = signal<'loading' | 'error' | 'data'>('loading');
 	public readonly wrappedSwitchData: Signal<SwitchExhaustibleAsyncDataWrapper<TData, HttpError>> =

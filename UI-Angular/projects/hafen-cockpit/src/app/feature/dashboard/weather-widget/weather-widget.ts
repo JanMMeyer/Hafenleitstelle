@@ -3,16 +3,16 @@ import { Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { AsyncOutlet } from '@cockpit/app/core/async-outlet/async-outlet';
-import { WidgetContainer } from '@cockpit/app/shared/widget/container/widget-container';
 import { WeatherWidgetService } from './weather.service';
+import { BaseWidget } from 'gridstack/dist/angular';
 // using https://erikflowers.github.io/weather-icons/
 @Component({
 	selector: 'app-weather-widget',
-	imports: [WidgetContainer, AsyncOutlet, MatCardModule, MatListModule, DatePipe],
+	imports: [AsyncOutlet, MatCardModule, MatListModule, DatePipe],
 	providers: [WeatherWidgetService],
 	template: `
-		<app-widget-container [row]="1" [col]="1" [rowSpan]="1" [colSpan]="4">
-			<mat-card>
+		<mat-card>
+			<mat-card-content>
 				<mat-list *appAsyncOutlet="weatherService; let weatherData = data">
 					@let weather = weatherData.weather;
 					<mat-list-item>
@@ -34,29 +34,22 @@ import { WeatherWidgetService } from './weather.service';
 						</span>
 					</mat-list-item>
 				</mat-list>
-			</mat-card>
-		</app-widget-container>
+			</mat-card-content>
+		</mat-card>
 	`,
 	styles: `
-		:host {
-			display: contents;
-			app-widget-container {
-				display: block;
-				mat-card {
-					padding: 0.5rem;
-					height: 100%;
-				}
-			}
-			span.at-symbol {
-				font-size: 1rem;
-				position: relative;
-				top: -0.3rem;
-				margin-left: 0.3rem;
-				margin-right: 0.1rem;
-			}
+		mat-card {
+			height: 100%;
+		}
+		span.at-symbol {
+			font-size: 1rem;
+			position: relative;
+			top: -0.3rem;
+			margin-left: 0.3rem;
+			margin-right: 0.1rem;
 		}
 	`,
 })
-export class WeatherWidget {
+export class WeatherWidget extends BaseWidget {
 	protected readonly weatherService: WeatherWidgetService = inject(WeatherWidgetService);
 }

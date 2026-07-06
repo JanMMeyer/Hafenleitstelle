@@ -4,6 +4,9 @@ import { WidgetContainer } from '@cockpit/app/shared/widget/container/widget-con
 import { PegelWidget } from './feature/dashboard/pegel-widget/pegel-widget';
 import { WidgetGrid } from './shared/widget/grid/grid';
 import { RouterOutlet } from '@angular/router';
+import { GridstackComponent } from 'gridstack/dist/angular';
+import { WeatherWidget } from './feature/dashboard/weather-widget/weather-widget';
+import { WeatherAlertWidget } from './feature/dashboard/weather-alert-widget/weather-alert-widget';
 
 /* ---- AI disclaimer ----
 
@@ -41,4 +44,7 @@ and finding the most elegant solution for passing the context to the content of 
 })
 export class App {
 	protected readonly title = signal('Hafen-Cockpit');
+	constructor() {
+		GridstackComponent.addComponentToSelectorType([PegelWidget, WeatherWidget, WeatherAlertWidget]);
+	}
 }

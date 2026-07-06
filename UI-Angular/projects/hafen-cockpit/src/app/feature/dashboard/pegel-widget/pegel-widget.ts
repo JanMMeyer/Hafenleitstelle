@@ -6,24 +6,18 @@ import { WidgetContainer } from '@cockpit/app/shared/widget/container/widget-con
 import { PegelWidgetService } from './pegel-current.service';
 import { PegelRelationPipe } from './pegel-relation.pipe';
 import { DatePipe } from '@angular/common';
+import { BaseWidget } from 'gridstack/dist/angular';
 
 @Component({
 	selector: 'app-pegel-widget',
-	imports: [
-		WidgetContainer,
-		AsyncOutlet,
-		MatCardModule,
-		MatListModule,
-		PegelRelationPipe,
-		DatePipe,
-	],
+	imports: [AsyncOutlet, MatCardModule, MatListModule, PegelRelationPipe, DatePipe],
 	providers: [PegelWidgetService],
 	template: `
-		<app-widget-container [row]="2" [col]="1" [rowSpan]="3" [colSpan]="4">
-			<mat-card>
-				<mat-list *appAsyncOutlet="pegelService; let pegel = data">
+		<mat-card>
+			<mat-card-content>
+				<mat-list *appAsyncOutlet="pegelService; showRefresh: false; let pegel = data">
 					<mat-list-item>
-						{{ pegel.currentMeasurement.timestamp | date: 'dd.MM.yy HH:mm' }}
+						Stand&nbsp;{{ pegel.currentMeasurement.timestamp | date: 'dd.MM.yy HH:mm' }}
 					</mat-list-item>
 					<mat-list-item>
 						<span matListItemTitle>Wasserstand </span>
@@ -41,27 +35,19 @@ import { DatePipe } from '@angular/common';
 						<span>{{ pegel.currentMeasurement.stateNswHsw | pegelRelation }}</span>
 					</mat-list-item>
 				</mat-list>
-
 				<!-- <img
 				src="https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/d488c5cc-4de9-4631-8ce1-0db0e700b546/W/measurements.png?start=P7D&width=440&height=220"
 			/> -->
-			</mat-card>
-		</app-widget-container>
+			</mat-card-content>
+		</mat-card>
 	`,
 	changeDetection: ChangeDetectionStrategy.Eager,
 	styles: `
-		:host {
-			display: contents;
-			app-widget-container {
-				display: block;
-				mat-card {
-					padding: 0.5rem;
-					height: 100%;
-				}
-			}
+		mat-card {
+			height: 100%;
 		}
 	`,
 })
-export class PegelWidget {
+export class PegelWidget extends BaseWidget {
 	public readonly pegelService: PegelWidgetService = inject(PegelWidgetService);
 }

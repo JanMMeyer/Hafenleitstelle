@@ -1,6 +1,8 @@
-<button class="refresh-button" matMiniFab (click)="refresh()" [disabled]="refreshBlocked()">
-	<mat-icon>refresh</mat-icon>
-</button>
+@if (showRefresh()) {
+	<button class="refresh-button" matMiniFab (click)="refresh()" [disabled]="refreshBlocked()">
+		<mat-icon>refresh</mat-icon>
+	</button>
+}
 @if (asyncDataService().isLoading()) {
 	<div class="progress-bar-container">
 		<mat-progress-bar mode="indeterminate"></mat-progress-bar>
