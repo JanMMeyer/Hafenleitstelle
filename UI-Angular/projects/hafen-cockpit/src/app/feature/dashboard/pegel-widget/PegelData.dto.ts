@@ -77,3 +77,10 @@ export function isPegelDataDto(data: unknown): data is PegelDataDto {
 		'gaugeZero' in data
 	);
 }
+
+export type PegelHistoItemDto = {
+	timestamp: string;
+	value: number;
+};
+
+export type PegelHistoDataDto = PegelHistoItemDto[];
