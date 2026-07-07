@@ -8,6 +8,7 @@ import { ErrorLoggingService } from './core/errorHandling/errorLogging.service';
 import { httpErrorMockingInterceptor } from './core/errorHandling/errorMocking/httpErrorMocking.interceptor';
 import { httpErrorRetryInterceptor } from './core/errorHandling/errorRetry.interceptor';
 import { GlobalAppErrorHandler } from './core/errorHandling/globalAppErrorHandler.class';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 // Erwägung: Http Interceptor der Header mit Session- und Request-UUID anreichert.
 // Anwendung: Error tracing, request tracking für busy state.
@@ -32,5 +33,6 @@ export const appConfig: ApplicationConfig = {
 			]),
 		),
 		provideRouter(routes),
+		provideCharts(withDefaultRegisterables()),
 	],
 };
