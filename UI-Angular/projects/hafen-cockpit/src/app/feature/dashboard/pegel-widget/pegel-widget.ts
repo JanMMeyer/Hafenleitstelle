@@ -63,11 +63,6 @@ import { PegelHistoService } from './pegel-histo.service';
 				>
 					<canvas baseChart [data]="pegelHistoChartData" [type]="'line'"> </canvas>
 				</ng-container>
-				<!-- <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="'bar'">
-				</canvas> -->
-				<!-- <img
-				src="https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/d488c5cc-4de9-4631-8ce1-0db0e700b546/W/measurements.png?start=P7D&width=440&height=220"
-			/> -->
 			</mat-card-content>
 		</mat-card>
 	`,
