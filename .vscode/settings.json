@@ -35,16 +35,16 @@
     ]
   },
   "files.exclude": {
-    "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/CVS": true,
-    "**/.DS_Store": true,
-    "UI-Angular/node_modules/": true,
-    "UI-Angular/.angular/": true,
-    "UI-Angular/.husky/": true,
-    "UI-Angular/dist/": true
-  },
+	"**/.git": true,
+	"**/.svn": true,
+	"**/.hg": true,
+	"**/CVS": true,
+	"**/.DS_Store": true,
+	"UI-Angular/node_modules/": true,
+	"UI-Angular/.angular/": true,
+	"UI-Angular/.husky/": true,
+	"UI-Angular/dist/": true
+},
   "hidefiles.selectedProfile": "Default",
   "cSpell.words": ["gridstack", "pegel"]
 }

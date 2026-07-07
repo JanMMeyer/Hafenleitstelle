@@ -6,7 +6,6 @@ import {
 	inject,
 	input,
 	InputSignal,
-	OnDestroy,
 	OnInit,
 	Signal,
 	signal,
@@ -18,7 +17,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { capRefreshBlock } from '@cockpit/app/shared/capRefreshBlock.utils';
-import { Subject } from 'rxjs';
 import { HttpError } from '../../errorHandling/httpError.class';
 import { implyNever } from '../../fundamentals/implyNever';
 import { AsyncDataSource } from '../../types/AsyncDataSource.type';
@@ -58,16 +56,14 @@ import { WithError } from '../../types/WithError.type';
 		}
 	`,
 })
-export class AsyncOutletContainer<TData extends object> implements OnInit, OnDestroy {
-	private readonly refreshTrigger$: Subject<void> = new Subject<void>();
-	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
+export class AsyncOutletContainer<TData extends object> implements OnInit {
 	private readonly destroyRef = inject(DestroyRef);
 
 	public readonly asyncDataService: InputSignal<AsyncDataSource<TData>> = input.required();
 	public readonly contentTemplate: InputSignal<TemplateRef<{ data: TData }>> = input.required();
 	public readonly showRefresh: InputSignal<boolean> = input(true);
+	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
 
-	// public readonly mode: WritableSignal<'loading' | 'error' | 'data'> = signal<'loading' | 'error' | 'data'>('loading');
 	public readonly wrappedSwitchData: Signal<SwitchExhaustibleAsyncDataWrapper<TData, HttpError>> =
 		computed<SwitchExhaustibleAsyncDataWrapper<TData, HttpError>>(() => {
 			const value: WithError<TData, HttpError> | undefined = this.asyncDataService().data();
@@ -83,6 +79,9 @@ export class AsyncOutletContainer<TData extends object> implements OnInit, OnDes
 		});
 
 	public ngOnInit(): void {
+		// less elegant version of getCappedRefreshBlockSignal, but since asyncDataService is a signal
+		// and is not set until "ngOnInit" we can't use it here
+		// better pattern to use DI to inject asyncDataService, and let parent component provide correct service?
 		capRefreshBlock({
 			isLoading$: this.asyncDataService().isLoading$,
 			refreshBlocked: this.refreshBlocked,
@@ -94,9 +93,5 @@ export class AsyncOutletContainer<TData extends object> implements OnInit, OnDes
 
 	public refresh(): void {
 		this.asyncDataService().load();
-	}
-
-	public ngOnDestroy(): void {
-		this.refreshTrigger$.complete();
 	}
 }

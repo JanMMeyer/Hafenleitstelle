@@ -1,12 +1,10 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { HttpErrorMockingControl } from '@cockpit/app/core/errorHandling/errorMocking/httpErrorMockingControl.component';
-import { WidgetContainer } from '@cockpit/app/shared/widget/container/widget-container';
-import { PegelWidget } from './feature/dashboard/pegel-widget/pegel-widget';
-import { WidgetGrid } from './shared/widget/grid/grid';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { HttpErrorMockingControl } from '@cockpit/app/core/errorHandling/errorMocking/httpErrorMockingControl.component';
 import { GridstackComponent } from 'gridstack/dist/angular';
-import { WeatherWidget } from './feature/dashboard/weather-widget/weather-widget';
+import { PegelWidget } from './feature/dashboard/pegel-widget/pegel-widget';
 import { WeatherAlertWidget } from './feature/dashboard/weather-alert-widget/weather-alert-widget';
+import { WeatherWidget } from './feature/dashboard/weather-widget/weather-widget';
 
 /* ---- AI disclaimer ----
 
