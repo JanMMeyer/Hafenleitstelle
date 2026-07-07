@@ -1,23 +1,16 @@
 import { DatePipe } from '@angular/common';
-import {
-	ChangeDetectionStrategy,
-	Component,
-	DestroyRef,
-	inject,
-	signal,
-	WritableSignal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { AsyncOutlet } from '@cockpit/app/core/async-outlet/async-outlet';
-import { capRefreshBlock } from '@cockpit/app/shared/capRefreshBlock.utils';
-import { BaseWidget } from 'gridstack/dist/angular';
-import { Subject } from 'rxjs';
+import { getCappedRefreshBlockSignal } from '@cockpit/app/shared/capRefreshBlock.utils';
+import { Widget } from '@cockpit/app/shared/widget/widget';
 import { DashboardService } from '../dashboard.service';
 import { PegelWidgetService } from './pegel-current.service';
 import { PegelRelationPipe } from './pegel-relation.pipe';
+import { PegelDataDto } from './PegelData.dto';
 
 @Component({
 	selector: 'app-pegel-widget',
@@ -42,7 +35,7 @@ import { PegelRelationPipe } from './pegel-relation.pipe';
 				>
 					<mat-icon>refresh</mat-icon>
 				</button>
-				<mat-list *appAsyncOutlet="pegelService; showRefresh: false; let pegel = data">
+				<mat-list *appAsyncOutlet="widgetDataService; showRefresh: false; let pegel = data">
 					<mat-list-item>
 						Stand&nbsp;{{ pegel.currentMeasurement.timestamp | date: 'dd.MM.yy HH:mm' }}
 					</mat-list-item>
@@ -82,25 +75,18 @@ import { PegelRelationPipe } from './pegel-relation.pipe';
 		}
 	`,
 })
-export class PegelWidget extends BaseWidget {
-	private readonly refreshTrigger$: Subject<void> = new Subject<void>();
+export class PegelWidget extends Widget<PegelDataDto> {
 	private readonly destroyRef = inject(DestroyRef);
 
-	public readonly refreshBlocked: WritableSignal<boolean> = signal(false);
-	public readonly pegelService: PegelWidgetService = inject(PegelWidgetService);
-	public readonly dashboardService: DashboardService = inject(DashboardService);
+	public readonly widgetDataService: PegelWidgetService = inject(PegelWidgetService);
+	public readonly widgetControlService: DashboardService = inject(DashboardService);
 
-	constructor() {
-		super();
-
-		capRefreshBlock({
-			isLoading$: this.pegelService.isLoading$,
-			refreshBlocked: this.refreshBlocked,
-			destroyRef: this.destroyRef,
-		});
-	}
+	public readonly refreshBlocked: Signal<boolean> = getCappedRefreshBlockSignal({
+		isLoading$: this.widgetDataService.isLoading$,
+		destroyRef: this.destroyRef,
+	});
 
 	public refresh(): void {
-		this.pegelService.load();
+		this.widgetDataService.load();
 	}
 }

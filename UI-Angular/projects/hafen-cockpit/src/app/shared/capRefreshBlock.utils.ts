@@ -1,8 +1,8 @@
-import { DestroyRef, WritableSignal } from '@angular/core';
-import { Observable, switchMap, tap } from 'rxjs';
+import { DestroyRef, Signal, WritableSignal } from '@angular/core';
+import { concat, map, Observable, of, switchMap, tap } from 'rxjs';
 import { filter, timer } from 'rxjs';
 import { HTTP_RETRY_CONFIG } from '../core/errorHandling/errorRetry.interceptor';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 export type BlockRefreshUntilParams = {
 	isLoading$: Observable<boolean>;
@@ -28,4 +28,25 @@ export function capRefreshBlock({
 		.subscribe(() => {
 			refreshBlocked.set(false);
 		});
+}
+
+export type GetCappedRefreshBlockParams = {
+	isLoading$: Observable<boolean>;
+	destroyRef: DestroyRef;
+	delayInMs?: number;
+};
+// mirrors is loading, buts resets to false after delay
+export function getCappedRefreshBlockSignal({
+	isLoading$,
+	destroyRef,
+	delayInMs = Math.floor(HTTP_RETRY_CONFIG.maxRetryDurationInMs / 3),
+}: GetCappedRefreshBlockParams): Signal<boolean> {
+	const refreshBlocked$ = isLoading$.pipe(
+		switchMap((isLoading) =>
+			// if isLoading: concat sends true immediately, then false after delay. if is not loading: send false immediately
+			isLoading ? concat(of(true), timer(delayInMs).pipe(map(() => false))) : of(false),
+		),
+		takeUntilDestroyed(destroyRef),
+	);
+	return toSignal(refreshBlocked$, { initialValue: false });
 }

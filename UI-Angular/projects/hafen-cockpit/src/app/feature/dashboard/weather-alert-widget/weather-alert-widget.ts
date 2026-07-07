@@ -5,6 +5,9 @@ import { AsyncOutlet } from '@cockpit/app/core/async-outlet/async-outlet';
 import { BaseWidget } from 'gridstack/dist/angular';
 import { WeatherAlert } from './alert/weather-alert';
 import { WeatherAlertWidgetService } from './weather-alert.service';
+import { Widget } from '@cockpit/app/shared/widget/widget';
+import { DashboardService } from '../dashboard.service';
+import { WeatherAlertsDto } from './WeatherAlert.dto';
 
 @Component({
 	selector: 'app-weather-alert-widget',
@@ -13,7 +16,7 @@ import { WeatherAlertWidgetService } from './weather-alert.service';
 	template: `
 		<mat-card>
 			<mat-card-content>
-				<ng-container *appAsyncOutlet="weatherAlertService; let weatherData = data">
+				<ng-container *appAsyncOutlet="widgetDataService; let weatherData = data">
 					@let alerts = weatherData.alerts;
 					@for (alert of alerts; track alert.id) {
 						<app-weather-alert
@@ -31,7 +34,7 @@ import { WeatherAlertWidgetService } from './weather-alert.service';
 		}
 	`,
 })
-export class WeatherAlertWidget extends BaseWidget {
-	protected readonly weatherAlertService: WeatherAlertWidgetService =
-		inject(WeatherAlertWidgetService);
+export class WeatherAlertWidget extends Widget<WeatherAlertsDto> {
+	public readonly widgetDataService: WeatherAlertWidgetService = inject(WeatherAlertWidgetService);
+	public readonly widgetControlService: DashboardService = inject(DashboardService);
 }

@@ -5,6 +5,9 @@ import { MatListModule } from '@angular/material/list';
 import { AsyncOutlet } from '@cockpit/app/core/async-outlet/async-outlet';
 import { WeatherWidgetService } from './weather.service';
 import { BaseWidget } from 'gridstack/dist/angular';
+import { WeatherDataDto } from './WeatherData.dto';
+import { Widget } from '@cockpit/app/shared/widget/widget';
+import { DashboardService } from '../dashboard.service';
 // using https://erikflowers.github.io/weather-icons/
 @Component({
 	selector: 'app-weather-widget',
@@ -13,7 +16,7 @@ import { BaseWidget } from 'gridstack/dist/angular';
 	template: `
 		<mat-card>
 			<mat-card-content>
-				<mat-list *appAsyncOutlet="weatherService; let weatherData = data">
+				<mat-list *appAsyncOutlet="widgetDataService; let weatherData = data">
 					@let weather = weatherData.weather;
 					<mat-list-item>
 						{{ weather.timestamp | date: 'dd.MM.yy HH:mm' }}
@@ -50,6 +53,7 @@ import { BaseWidget } from 'gridstack/dist/angular';
 		}
 	`,
 })
-export class WeatherWidget extends BaseWidget {
-	protected readonly weatherService: WeatherWidgetService = inject(WeatherWidgetService);
+export class WeatherWidget extends Widget<WeatherDataDto> {
+	public readonly widgetDataService: WeatherWidgetService = inject(WeatherWidgetService);
+	public readonly widgetControlService: DashboardService = inject(DashboardService);
 }
