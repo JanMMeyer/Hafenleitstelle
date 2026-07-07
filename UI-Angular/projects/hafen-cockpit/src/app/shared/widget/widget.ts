@@ -6,11 +6,12 @@ import { WidgetControl } from './WidgetControl.type';
 @Component({
 	template: '<ng-content></ng-content>',
 })
-export abstract class Widget<T extends object> extends BaseWidget implements OnInit {
-	public abstract readonly widgetDataService: AsyncDataSource<T>;
+export abstract class Widget extends BaseWidget implements OnInit {
 	public abstract readonly widgetControlService: WidgetControl;
 
 	public ngOnInit(): void {
-		this.widgetControlService.refreshAllTrigger$.subscribe(() => this.widgetDataService.load());
+		this.widgetControlService.refreshAllTrigger$.subscribe(() => this.refresh());
 	}
+
+	public abstract refresh(): void;
 }

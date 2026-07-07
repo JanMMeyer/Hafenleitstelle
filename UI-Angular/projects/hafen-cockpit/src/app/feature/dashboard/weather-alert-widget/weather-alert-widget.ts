@@ -34,7 +34,11 @@ import { WeatherAlertsDto } from './WeatherAlert.dto';
 		}
 	`,
 })
-export class WeatherAlertWidget extends Widget<WeatherAlertsDto> {
+export class WeatherAlertWidget extends Widget {
 	public readonly widgetDataService: WeatherAlertWidgetService = inject(WeatherAlertWidgetService);
 	public readonly widgetControlService: DashboardService = inject(DashboardService);
+
+	public refresh(): void {
+		this.widgetDataService.load();
+	}
 }
