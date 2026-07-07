@@ -5,26 +5,38 @@ import { AsyncDataSourceService } from '@cockpit/app/shared/async-data-source/ab
 import { Observable } from 'rxjs';
 import { PegelDataDto } from './PegelData.dto';
 
-//  TODO location as injectable token, or environment that can be set during build time
+//  TODO from environment that can be set during build time, for other customers deployments with other locations
 const locationUUID: string = 'd488c5cc-4de9-4631-8ce1-0db0e700b546';
 
 // TODO use ng-openapi gen with  https://raw.githubusercontent.com/bundesAPI/pegel-online-api/main/openapi.yaml
-
 @Injectable()
-export class PegelWidgetService
+export class PegelCurrentService
 	extends AsyncDataSourceService<PegelDataDto>
 	implements AsyncDataSource<PegelDataDto>
 {
-	private readonly baseApiUrl: string =
+	private readonly baseApiUrlString: string =
 		'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/';
 
-	private readonly pegelCurrentUrl =
-		this.baseApiUrl + locationUUID + '/W.json?includeCurrentMeasurement=true';
+	private readonly dataUrl: URL;
 
 	private readonly http: HttpClient = inject(HttpClient);
 
+	public constructor() {
+		super();
+		const endpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/`;
+		if (!URL.canParse(endpointUrlString)) {
+			// hope this fails at compile time
+			throw new Error('Endpoint URL is not a valid URL');
+		}
+		// W.json?includeCurrentMeasurement=true bringt laut Doku "Die Wasserstandszeitreihe des Pegels [...] mit dem aktuelle Messwert."
+		// stimmt aber nicht, es enthält NUR currentMeasurement, aber keine Timeseries....
+		const endpointUrl: URL = new URL('W.json', endpointUrlString);
+		endpointUrl.searchParams.append('includeCurrentMeasurement', 'true');
+		this.dataUrl = endpointUrl;
+	}
+
 	protected override fetchData(): Observable<PegelDataDto> {
 		console.log('fetching PegelCurrent');
-		return this.http.get<PegelDataDto>(this.pegelCurrentUrl);
+		return this.http.get<PegelDataDto>(this.dataUrl.toString());
 	}
 }
