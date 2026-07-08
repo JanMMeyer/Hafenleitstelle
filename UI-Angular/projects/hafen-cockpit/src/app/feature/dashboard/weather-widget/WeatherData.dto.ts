@@ -28,69 +28,69 @@ export type ObservationType = 'historical' | 'current' | 'synop' | 'forecast';
  *
  * @property {string} timestamp - ISO 8601-formatted timestamp of this weather record.
  * @property {number} source_id - Bright Sky source ID for this record.
- * @property {number} cloud_cover - Total cloud cover at timestamp (%).
- * @property {WeatherCondition} condition - Current weather conditions. Unlike the numerical parameters, this field is not taken as-is from the raw data (because it does not exist), but is calculated from different fields in the raw data as a best effort. Not all values are available for all source types.
- * @property {number} dew_point - Dew point at timestamp, 2 m above ground (°C).
- * @property {WeatherIcon} icon - Icon alias suitable for the current weather conditions. Unlike the numerical parameters, this field is not taken as-is from the raw data (because it does not exist), but is calculated from different fields in the raw data as a best effort. Not all values are available for all source types.
- * @property {number} pressure_msl - Atmospheric pressure at timestamp, reduced to mean sea level (hPa).
- * @property {number} relative_humidity - Relative humidity at timestamp (%).
- * @property {number} temperature - Air temperature at timestamp, 2 m above the ground (°C).
- * @property {number} visibility - Visibility at timestamp (m).
+ * @property {number | null} cloud_cover - Total cloud cover at timestamp (%).
+ * @property {WeatherCondition | null} condition - Current weather conditions. Unlike the numerical parameters, this field is not taken as-is from the raw data (because it does not exist), but is calculated from different fields in the raw data as a best effort. Not all values are available for all source types.
+ * @property {number | null} dew_point - Dew point at timestamp, 2 m above ground (°C).
+ * @property {WeatherIcon | null} icon - Icon alias suitable for the current weather conditions. Unlike the numerical parameters, this field is not taken as-is from the raw data (because it does not exist), but is calculated from different fields in the raw data as a best effort. Not all values are available for all source types.
+ * @property {number | null} pressure_msl - Atmospheric pressure at timestamp, reduced to mean sea level (hPa).
+ * @property {number | null} relative_humidity - Relative humidity at timestamp (%).
+ * @property {number | null} temperature - Air temperature at timestamp, 2 m above the ground (°C).
+ * @property {number | null} visibility - Visibility at timestamp (m).
  * @property {Record<string, number>} fallback_source_ids - Object mapping meteorological parameters to the source IDs of alternative sources that were used to fill up missing values in the main source.
- * @property {number} precipitation_10 - Total precipitation during previous 10 minutes (mm).
- * @property {number} precipitation_30 - Total precipitation during previous 30 minutes (mm).
- * @property {number} precipitation_60 - Total precipitation during previous 60 minutes (mm).
- * @property {number} solar_10 - Solar irradiation during previous 10 minutes (kWh/m²).
- * @property {number} solar_30 - Solar irradiation during previous 30 minutes (kWh/m²).
- * @property {number} solar_60 - Solar irradiation during previous 60 minutes (kWh/m²).
- * @property {number} sunshine_30 - Sunshine duration during previous 30 minutes (min).
- * @property {number} sunshine_60 - Sunshine duration during previous 60 minutes (min).
- * @property {number} wind_direction_10 - Mean wind direction during previous 10 minutes, 10 m above the ground (°).
- * @property {number} wind_direction_30 - Mean wind direction during previous 30 minutes, 10 m above the ground (°).
- * @property {number} wind_direction_60 - Mean wind direction during previous 60 minutes, 10 m above the ground (°).
- * @property {number} wind_speed_10 - Mean wind speed during previous 10 minutes, 10 m above the ground (km/h).
- * @property {number} wind_speed_30 - Mean wind speed during previous 30 minutes, 10 m above the ground (km/h).
- * @property {number} wind_speed_60 - Mean wind speed during previous 60 minutes, 10 m above the ground (km/h).
- * @property {number} wind_gust_direction_10 - Direction of maximum wind gust during previous 10 minutes, 10 m above the ground (°).
- * @property {number} wind_gust_direction_30 - Direction of maximum wind gust during previous 30 minutes, 10 m above the ground (°).
- * @property {number} wind_gust_direction_60 - Direction of maximum wind gust during previous 60 minutes, 10 m above the ground (°).
- * @property {number} wind_gust_speed_10 - Speed of maximum wind gust during previous 10 minutes, 10 m above the ground (km/h).
- * @property {number} wind_gust_speed_30 - Speed of maximum wind gust during previous 30 minutes, 10 m above the ground (km/h).
- * @property {number} wind_gust_speed_60 - Speed of maximum wind gust during previous 60 minutes, 10 m above the ground (km/h).
+ * @property {number | null} precipitation_10 - Total precipitation during previous 10 minutes (mm).
+ * @property {number | null} precipitation_30 - Total precipitation during previous 30 minutes (mm).
+ * @property {number | null} precipitation_60 - Total precipitation during previous 60 minutes (mm).
+ * @property {number | null} solar_10 - Solar irradiation during previous 10 minutes (kWh/m²).
+ * @property {number | null} solar_30 - Solar irradiation during previous 30 minutes (kWh/m²).
+ * @property {number | null} solar_60 - Solar irradiation during previous 60 minutes (kWh/m²).
+ * @property {number | null} sunshine_30 - Sunshine duration during previous 30 minutes (min).
+ * @property {number | null} sunshine_60 - Sunshine duration during previous 60 minutes (min).
+ * @property {number | null} wind_direction_10 - Mean wind direction during previous 10 minutes, 10 m above the ground (°).
+ * @property {number | null} wind_direction_30 - Mean wind direction during previous 30 minutes, 10 m above the ground (°).
+ * @property {number | null} wind_direction_60 - Mean wind direction during previous 60 minutes, 10 m above the ground (°).
+ * @property {number | null} wind_speed_10 - Mean wind speed during previous 10 minutes, 10 m above the ground (km/h).
+ * @property {number | null} wind_speed_30 - Mean wind speed during previous 30 minutes, 10 m above the ground (km/h).
+ * @property {number | null} wind_speed_60 - Mean wind speed during previous 60 minutes, 10 m above the ground (km/h).
+ * @property {number | null} wind_gust_direction_10 - Direction of maximum wind gust during previous 10 minutes, 10 m above the ground (°).
+ * @property {number | null} wind_gust_direction_30 - Direction of maximum wind gust during previous 30 minutes, 10 m above the ground (°).
+ * @property {number | null} wind_gust_direction_60 - Direction of maximum wind gust during previous 60 minutes, 10 m above the ground (°).
+ * @property {number | null} wind_gust_speed_10 - Speed of maximum wind gust during previous 10 minutes, 10 m above the ground (km/h).
+ * @property {number | null} wind_gust_speed_30 - Speed of maximum wind gust during previous 30 minutes, 10 m above the ground (km/h).
+ * @property {number | null} wind_gust_speed_60 - Speed of maximum wind gust during previous 60 minutes, 10 m above the ground (km/h).
  */
 
 export type CurrentWeatherDto = {
 	timestamp: string;
 	source_id: number;
-	cloud_cover: number;
-	condition: WeatherCondition;
-	dew_point: number;
-	icon: WeatherIcon;
-	pressure_msl: number;
-	relative_humidity: number;
-	temperature: number;
-	visibility: number;
+	cloud_cover: number | null;
+	condition: WeatherCondition | null;
+	dew_point: number | null;
+	icon: WeatherIcon | null;
+	pressure_msl: number | null;
+	relative_humidity: number | null;
+	temperature: number | null;
+	visibility: number | null;
 	fallback_source_ids: Record<string, number>;
-	precipitation_10: number;
-	precipitation_30: number;
-	precipitation_60: number;
-	solar_10: number;
-	solar_30: number;
-	solar_60: number;
-	sunshine_30: number;
-	sunshine_60: number;
-	wind_direction_10: number;
-	wind_direction_30: number;
-	wind_direction_60: number;
-	wind_speed_10: number;
-	wind_speed_30: number;
-	wind_speed_60: number;
-	wind_gust_direction_10: number;
-	wind_gust_direction_30: number;
-	wind_gust_direction_60: number;
-	wind_gust_speed_10: number;
-	wind_gust_speed_30: number;
-	wind_gust_speed_60: number;
+	precipitation_10: number | null;
+	precipitation_30: number | null;
+	precipitation_60: number | null;
+	solar_10: number | null;
+	solar_30: number | null;
+	solar_60: number | null;
+	sunshine_30: number | null;
+	sunshine_60: number | null;
+	wind_direction_10: number | null;
+	wind_direction_30: number | null;
+	wind_direction_60: number | null;
+	wind_speed_10: number | null;
+	wind_speed_30: number | null;
+	wind_speed_60: number | null;
+	wind_gust_direction_10: number | null;
+	wind_gust_direction_30: number | null;
+	wind_gust_direction_60: number | null;
+	wind_gust_speed_10: number | null;
+	wind_gust_speed_30: number | null;
+	wind_gust_speed_60: number | null;
 };
 
 export function isCurrentWeatherDto(data: unknown): data is CurrentWeatherDto {
@@ -102,36 +102,36 @@ export function isCurrentWeatherDto(data: unknown): data is CurrentWeatherDto {
 	return (
 		typeof record['timestamp'] === 'string' &&
 		typeof record['source_id'] === 'number' &&
-		typeof record['cloud_cover'] === 'number' &&
-		typeof record['condition'] === 'string' &&
-		typeof record['dew_point'] === 'number' &&
-		typeof record['icon'] === 'string' &&
-		typeof record['pressure_msl'] === 'number' &&
-		typeof record['relative_humidity'] === 'number' &&
-		typeof record['temperature'] === 'number' &&
-		typeof record['visibility'] === 'number' &&
+		(typeof record['cloud_cover'] === 'number' || record['cloud_cover'] === null) &&
+		(typeof record['condition'] === 'string' || record['condition'] === null) &&
+		(typeof record['dew_point'] === 'number' || record['dew_point'] === null) &&
+		(typeof record['icon'] === 'string' || record['icon'] === null) &&
+		(typeof record['pressure_msl'] === 'number' || record['pressure_msl'] === null) &&
+		(typeof record['relative_humidity'] === 'number' || record['relative_humidity'] === null) &&
+		(typeof record['temperature'] === 'number' || record['temperature'] === null) &&
+		(typeof record['visibility'] === 'number' || record['visibility'] === null) &&
 		typeof record['fallback_source_ids'] === 'object' &&
 		record['fallback_source_ids'] !== null &&
-		typeof record['precipitation_10'] === 'number' &&
-		typeof record['precipitation_30'] === 'number' &&
-		typeof record['precipitation_60'] === 'number' &&
-		typeof record['solar_10'] === 'number' &&
-		typeof record['solar_30'] === 'number' &&
-		typeof record['solar_60'] === 'number' &&
-		typeof record['sunshine_30'] === 'number' &&
-		typeof record['sunshine_60'] === 'number' &&
-		typeof record['wind_direction_10'] === 'number' &&
-		typeof record['wind_direction_30'] === 'number' &&
-		typeof record['wind_direction_60'] === 'number' &&
-		typeof record['wind_speed_10'] === 'number' &&
-		typeof record['wind_speed_30'] === 'number' &&
-		typeof record['wind_speed_60'] === 'number' &&
-		typeof record['wind_gust_direction_10'] === 'number' &&
-		typeof record['wind_gust_direction_30'] === 'number' &&
-		typeof record['wind_gust_direction_60'] === 'number' &&
-		typeof record['wind_gust_speed_10'] === 'number' &&
-		typeof record['wind_gust_speed_30'] === 'number' &&
-		typeof record['wind_gust_speed_60'] === 'number'
+		(typeof record['precipitation_10'] === 'number' || record['precipitation_10'] === null) &&
+		(typeof record['precipitation_30'] === 'number' || record['precipitation_30'] === null) &&
+		(typeof record['precipitation_60'] === 'number' || record['precipitation_60'] === null) &&
+		(typeof record['solar_10'] === 'number' || record['solar_10'] === null) &&
+		(typeof record['solar_30'] === 'number' || record['solar_30'] === null) &&
+		(typeof record['solar_60'] === 'number' || record['solar_60'] === null) &&
+		(typeof record['sunshine_30'] === 'number' || record['sunshine_30'] === null) &&
+		(typeof record['sunshine_60'] === 'number' || record['sunshine_60'] === null) &&
+		(typeof record['wind_direction_10'] === 'number' || record['wind_direction_10'] === null) &&
+		(typeof record['wind_direction_30'] === 'number' || record['wind_direction_30'] === null) &&
+		(typeof record['wind_direction_60'] === 'number' || record['wind_direction_60'] === null) &&
+		(typeof record['wind_speed_10'] === 'number' || record['wind_speed_10'] === null) &&
+		(typeof record['wind_speed_30'] === 'number' || record['wind_speed_30'] === null) &&
+		(typeof record['wind_speed_60'] === 'number' || record['wind_speed_60'] === null) &&
+		(typeof record['wind_gust_direction_10'] === 'number' || record['wind_gust_direction_10'] === null) &&
+		(typeof record['wind_gust_direction_30'] === 'number' || record['wind_gust_direction_30'] === null) &&
+		(typeof record['wind_gust_direction_60'] === 'number' || record['wind_gust_direction_60'] === null) &&
+		(typeof record['wind_gust_speed_10'] === 'number' || record['wind_gust_speed_10'] === null) &&
+		(typeof record['wind_gust_speed_30'] === 'number' || record['wind_gust_speed_30'] === null) &&
+		(typeof record['wind_gust_speed_60'] === 'number' || record['wind_gust_speed_60'] === null)
 	);
 }
 

@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { AsyncDataSourceService } from '@cockpit/app/shared/async-data-source/abstract.async-data.service';
-import { Observable } from 'rxjs';
-import { WeatherDataDto } from './WeatherData.dto';
+import { Observable, tap } from 'rxjs';
+import { isWeatherDataDto, WeatherDataDto } from './WeatherData.dto';
 
 //  TODO location as injectable token, or environment that can be set during build time
 const locationGpsCoords: { lat: number; lon: number } = { lat: 53.55416, lon: 9.95833 };
@@ -35,6 +35,12 @@ export class WeatherWidgetService
 
 	protected override fetchData(): Observable<WeatherDataDto> {
 		console.log('fetching WeatherCurrent');
-		return this.http.get<WeatherDataDto>(this.dataUrl.toString());
+		return this.http.get<WeatherDataDto>(this.dataUrl.toString()).pipe(
+			tap((data) => {
+				if (!isWeatherDataDto(data)) {
+					throw new TypeError('Invalid data in fetchWeatherCurrent', { cause: data });
+				}
+			}),
+		);
 	}
 }

@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { AsyncDataSourceService } from '@cockpit/app/shared/async-data-source/abstract.async-data.service';
-import { combineLatest, map, Observable, tap } from 'rxjs';
+import { combineLatest, forkJoin, map, Observable, tap } from 'rxjs';
 import { PegelChartData } from './PegelChartData.model';
 import { isPegelMeasurementDataDto, PegelMeasurementDataDto } from './PegelData.dto';
 
@@ -47,7 +47,7 @@ export class PegelChartService
 
 	protected override fetchData(): Observable<PegelChartData> {
 		// use the right rxjs operator to combine the two observables, one that fires once and  completes
-		return combineLatest({ histo: this.fetchHistoData(), forecast: this.fetchForecastData() }).pipe(
+		return forkJoin({ histo: this.fetchHistoData(), forecast: this.fetchForecastData() }).pipe(
 			map(
 				({
 					histo,
@@ -81,7 +81,7 @@ export class PegelChartService
 		return this.http.get<PegelMeasurementDataDto>(this.forecastDataUrl.toString()).pipe(
 			tap((data) => {
 				if (!isPegelMeasurementDataDto(data)) {
-					throw new TypeError('Invalid data in fetchHistoData', { cause: data });
+					throw new TypeError('Invalid data in fetchForecastData', { cause: data });
 				}
 			}),
 		);
