@@ -37,7 +37,7 @@ export class Dashboard {
 
 	private readonly defaultGridStackWidgets: NgGridStackWidget[] = [
 		{ x: 0, y: 0, w: 3, h: 4, selector: 'app-weather-widget' },
-		{ x: 3, y: 0, w: 3, h: 4, selector: 'app-pegel-widget' },
+		{ x: 3, y: 0, w: 7, h: 4, selector: 'app-pegel-widget' },
 		{ x: 0, y: 4, w: 6, h: 4, selector: 'app-weather-alert-widget' },
 	];
 
