@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { AsyncDataSourceService } from '@cockpit/app/shared/async-data-source/abstract.async-data.service';

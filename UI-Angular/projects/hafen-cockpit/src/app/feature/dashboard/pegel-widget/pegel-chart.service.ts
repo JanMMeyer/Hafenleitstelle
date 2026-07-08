@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { AsyncDataSourceService } from '@cockpit/app/shared/async-data-source/abstract.async-data.service';
-import { combineLatest, forkJoin, map, Observable, tap } from 'rxjs';
+import { catchError, combineLatest, forkJoin, map, Observable, of, tap } from 'rxjs';
 import { PegelChartData } from './PegelChartData.model';
 import { isPegelMeasurementDataDto, PegelMeasurementDataDto } from './PegelData.dto';
 
@@ -27,6 +27,7 @@ export class PegelChartService
 
 	public constructor() {
 		super();
+
 		const histoEndpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/W/`;
 		if (!URL.canParse(histoEndpointUrlString)) {
 			// failing as early as possible
@@ -36,18 +37,34 @@ export class PegelChartService
 		histoEndpointUrl.searchParams.append('start', 'P1D');
 		this.histoDataUrl = histoEndpointUrl;
 
-		const forecastEndpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/F/`;
+		const forecastEndpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/WV/`;
 		if (!URL.canParse(forecastEndpointUrlString)) {
 			// failing as early as possible
 			throw new URIError('Endpoint URL is not a valid URL:' + forecastEndpointUrlString);
 		}
 		const forecastEndpointUrl: URL = new URL('measurements.json', forecastEndpointUrlString);
 		this.forecastDataUrl = forecastEndpointUrl;
+
+		// https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/1d26e504-7f9e-480a-b52c-5932be6549ab.json?includeForecastTimeseries=true
 	}
 
 	protected override fetchData(): Observable<PegelChartData> {
 		// use the right rxjs operator to combine the two observables, one that fires once and  completes
-		return forkJoin({ histo: this.fetchHistoData(), forecast: this.fetchForecastData() }).pipe(
+		return forkJoin({
+			histo: this.fetchHistoData(),
+			forecast: this.fetchForecastData().pipe(
+				catchError((error) => {
+					if (
+						error instanceof HttpErrorResponse &&
+						error.status === 404 &&
+						error.error.message === 'Timeseries does not exist.'
+					) {
+						return of([]);
+					}
+					throw error;
+				}),
+			),
+		}).pipe(
 			map(
 				({
 					histo,

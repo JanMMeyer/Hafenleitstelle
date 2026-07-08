@@ -62,7 +62,13 @@ import { PegelRelationPipe } from './pegel-relation.pipe';
 				<ng-container
 					*appAsyncOutlet="pegelHistoService; showRefresh: false; let pegelHistoChartData = data"
 				>
-					<canvas baseChart [data]="pegelHistoChartData" [type]="'line'" [options]="pegelHistoGraphOptions"> </canvas>
+					<canvas
+						baseChart
+						[data]="pegelHistoChartData"
+						[type]="'line'"
+						[options]="pegelHistoGraphOptions"
+					>
+					</canvas>
 				</ng-container>
 			</mat-card-content>
 		</mat-card>
@@ -71,7 +77,7 @@ import { PegelRelationPipe } from './pegel-relation.pipe';
 		mat-card {
 			height: 100%;
 			mat-card-content {
-			display: flex;
+				display: flex;
 				position: relative;
 				button.top-right {
 					top: 1rem;
@@ -97,31 +103,30 @@ export class PegelWidget extends Widget {
 		},
 		scales: {
 			x: {
-			  type: 'time',
-			  time: {
-				unit: 'hour',
-				displayFormats: { hour: 'HH:mm' },
-			  },
-			  ticks: {
-			  },
-			},
-			},
-			elements: {
-				point: {
-				  radius: 0,
-				  hoverRadius: 4,
-				  hitRadius: 10,
+				type: 'time',
+				time: {
+					unit: 'hour',
+					displayFormats: { hour: 'HH:mm' },
 				},
-				line: {
-					tension: 0.6,
-					cubicInterpolationMode: 'monotone',
-				  },
-			  },
-		  plugins: {
+				ticks: {},
+			},
+		},
+		elements: {
+			point: {
+				radius: 0,
+				hoverRadius: 4,
+				hitRadius: 10,
+			},
+			line: {
+				tension: 0.6,
+				cubicInterpolationMode: 'monotone',
+			},
+		},
+		plugins: {
 			legend: {
 				display: false,
-			}
-		}
+			},
+		},
 	};
 	public readonly refreshBlocked: Signal<boolean> = getCappedRefreshBlockSignal({
 		isLoading$: this.pegelCurrentService.isLoading$,
@@ -130,5 +135,6 @@ export class PegelWidget extends Widget {
 
 	public refresh(): void {
 		this.pegelCurrentService.load();
+		this.pegelHistoService.load();
 	}
 }

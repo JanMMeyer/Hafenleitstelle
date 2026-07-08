@@ -36,7 +36,7 @@ export type ObservationType = 'historical' | 'current' | 'synop' | 'forecast';
  * @property {number | null} relative_humidity - Relative humidity at timestamp (%).
  * @property {number | null} temperature - Air temperature at timestamp, 2 m above the ground (°C).
  * @property {number | null} visibility - Visibility at timestamp (m).
- * @property {Record<string, number>} fallback_source_ids - Object mapping meteorological parameters to the source IDs of alternative sources that were used to fill up missing values in the main source.
+missing!!! * @property {Record<string, number>} fallback_source_ids - Object mapping meteorological parameters to the source IDs of alternative sources that were used to fill up missing values in the main source.
  * @property {number | null} precipitation_10 - Total precipitation during previous 10 minutes (mm).
  * @property {number | null} precipitation_30 - Total precipitation during previous 30 minutes (mm).
  * @property {number | null} precipitation_60 - Total precipitation during previous 60 minutes (mm).
@@ -110,8 +110,8 @@ export function isCurrentWeatherDto(data: unknown): data is CurrentWeatherDto {
 		(typeof record['relative_humidity'] === 'number' || record['relative_humidity'] === null) &&
 		(typeof record['temperature'] === 'number' || record['temperature'] === null) &&
 		(typeof record['visibility'] === 'number' || record['visibility'] === null) &&
-		typeof record['fallback_source_ids'] === 'object' &&
-		record['fallback_source_ids'] !== null &&
+		// typeof record['fallback_source_ids'] === 'object' &&
+		// record['fallback_source_ids'] !== null && <- missing, documentation is wrong
 		(typeof record['precipitation_10'] === 'number' || record['precipitation_10'] === null) &&
 		(typeof record['precipitation_30'] === 'number' || record['precipitation_30'] === null) &&
 		(typeof record['precipitation_60'] === 'number' || record['precipitation_60'] === null) &&
@@ -126,9 +126,12 @@ export function isCurrentWeatherDto(data: unknown): data is CurrentWeatherDto {
 		(typeof record['wind_speed_10'] === 'number' || record['wind_speed_10'] === null) &&
 		(typeof record['wind_speed_30'] === 'number' || record['wind_speed_30'] === null) &&
 		(typeof record['wind_speed_60'] === 'number' || record['wind_speed_60'] === null) &&
-		(typeof record['wind_gust_direction_10'] === 'number' || record['wind_gust_direction_10'] === null) &&
-		(typeof record['wind_gust_direction_30'] === 'number' || record['wind_gust_direction_30'] === null) &&
-		(typeof record['wind_gust_direction_60'] === 'number' || record['wind_gust_direction_60'] === null) &&
+		(typeof record['wind_gust_direction_10'] === 'number' ||
+			record['wind_gust_direction_10'] === null) &&
+		(typeof record['wind_gust_direction_30'] === 'number' ||
+			record['wind_gust_direction_30'] === null) &&
+		(typeof record['wind_gust_direction_60'] === 'number' ||
+			record['wind_gust_direction_60'] === null) &&
 		(typeof record['wind_gust_speed_10'] === 'number' || record['wind_gust_speed_10'] === null) &&
 		(typeof record['wind_gust_speed_30'] === 'number' || record['wind_gust_speed_30'] === null) &&
 		(typeof record['wind_gust_speed_60'] === 'number' || record['wind_gust_speed_60'] === null)

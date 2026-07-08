@@ -29,9 +29,18 @@ import { WeatherWidgetService } from './weather.service';
 					</mat-list-item>
 					<mat-list-item>
 						<span matListItemTitle>Wind Richtung @ Geschwindigkeit</span>
-						<span matListItemLine
-							>{{ weather.wind_direction_10 }}°<span class="at-symbol">@</span>
-							{{ weather.wind_speed_10 }}<span class="data-unit">km/h</span>
+						<span matListItemLine>
+							@if (weather.wind_direction_10) {
+								{{ weather.wind_direction_10 }}°
+							} @else {
+								123°<span class="fake"> (fake)</span>
+							}
+							<span class="at-symbol">@</span>
+							@if (weather.wind_speed_10) {
+								{{ weather.wind_speed_10 }}<span class="data-unit">km/h</span>
+							} @else {
+								123<span class="data-unit">km/h</span><span class="fake"> (fake)</span>
+							}
 						</span>
 					</mat-list-item>
 				</mat-list>
@@ -48,6 +57,12 @@ import { WeatherWidgetService } from './weather.service';
 			top: -0.3rem;
 			margin-left: 0.3rem;
 			margin-right: 0.1rem;
+		}
+		span.fake {
+			position: relative;
+			top: -0.6rem;
+			font-size: 0.5rem;
+			color: #999;
 		}
 	`,
 })
