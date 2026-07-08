@@ -1,30 +1,17 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { DestroyRef, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ErrorLoggingService } from '@cockpit/app/core/errorHandling/errorLogging.service';
 import { HttpError } from '@cockpit/app/core/errorHandling/httpError.class';
 import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { WithError } from '@cockpit/app/core/types/WithError.type';
-import {
-	BehaviorSubject,
-	catchError,
-	filter,
-	finalize,
-	Observable,
-	of,
-	Subject,
-	switchMap,
-	take,
-	tap,
-} from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, Subject, switchMap, take, tap } from 'rxjs';
 
 @Injectable()
 export abstract class AsyncDataSourceService<
 	TData extends object,
 > implements AsyncDataSource<TData> {
-	static refreshBlocked() {
-		throw new Error('Method not implemented.');
-	}
-
+	private readonly errorLoggingService: ErrorLoggingService = inject(ErrorLoggingService);
 	private readonly destroyRef = inject(DestroyRef);
 
 	private readonly loadTrigger$: Subject<void> = new Subject<void>();
@@ -51,9 +38,14 @@ export abstract class AsyncDataSourceService<
 				switchMap(() =>
 					this.fetchData().pipe(
 						catchError((error: unknown) => {
-							if (!(error instanceof HttpErrorResponse))
-								throw new Error('Unexpected argument type in catchError', { cause: error });
-							return of(new HttpError(error.error, error.status));
+							if (error instanceof HttpErrorResponse) {
+								return of(new HttpError(error.error, error.status));
+							}
+							const errorToLog = new Error('FetchData threw non HttpErrorResponse', {
+								cause: error,
+							});
+							this.errorLoggingService.logError(errorToLog);
+							return of(new HttpError(errorToLog, 400));
 						}),
 						take(1),
 					),

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ErrorMockingService, MockHttpErrorStatus } from './errorMocking.service';
 // AI generated... manually modified
 @Component({
@@ -52,7 +52,7 @@ import { ErrorMockingService, MockHttpErrorStatus } from './errorMocking.service
 		:host {
 			position: fixed;
 			bottom: 0.5rem;
-			right: 0.5rem;
+			left: 0.5rem;
 			z-index: 1000;
 
 			display: flex;
