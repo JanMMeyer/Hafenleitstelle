@@ -92,6 +92,49 @@ export type CurrentWeatherDto = {
 	wind_gust_speed_30: number;
 	wind_gust_speed_60: number;
 };
+
+export function isCurrentWeatherDto(data: unknown): data is CurrentWeatherDto {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const record = data as Record<string, unknown>;
+	return (
+		typeof record['timestamp'] === 'string' &&
+		typeof record['source_id'] === 'number' &&
+		typeof record['cloud_cover'] === 'number' &&
+		typeof record['condition'] === 'string' &&
+		typeof record['dew_point'] === 'number' &&
+		typeof record['icon'] === 'string' &&
+		typeof record['pressure_msl'] === 'number' &&
+		typeof record['relative_humidity'] === 'number' &&
+		typeof record['temperature'] === 'number' &&
+		typeof record['visibility'] === 'number' &&
+		typeof record['fallback_source_ids'] === 'object' &&
+		record['fallback_source_ids'] !== null &&
+		typeof record['precipitation_10'] === 'number' &&
+		typeof record['precipitation_30'] === 'number' &&
+		typeof record['precipitation_60'] === 'number' &&
+		typeof record['solar_10'] === 'number' &&
+		typeof record['solar_30'] === 'number' &&
+		typeof record['solar_60'] === 'number' &&
+		typeof record['sunshine_30'] === 'number' &&
+		typeof record['sunshine_60'] === 'number' &&
+		typeof record['wind_direction_10'] === 'number' &&
+		typeof record['wind_direction_30'] === 'number' &&
+		typeof record['wind_direction_60'] === 'number' &&
+		typeof record['wind_speed_10'] === 'number' &&
+		typeof record['wind_speed_30'] === 'number' &&
+		typeof record['wind_speed_60'] === 'number' &&
+		typeof record['wind_gust_direction_10'] === 'number' &&
+		typeof record['wind_gust_direction_30'] === 'number' &&
+		typeof record['wind_gust_direction_60'] === 'number' &&
+		typeof record['wind_gust_speed_10'] === 'number' &&
+		typeof record['wind_gust_speed_30'] === 'number' &&
+		typeof record['wind_gust_speed_60'] === 'number'
+	);
+}
+
 export type CurrentWeatherSourceDto = {
 	id: number;
 	dwd_station_id: string | null;
@@ -105,8 +148,43 @@ export type CurrentWeatherSourceDto = {
 	height: number;
 	distance: number | null;
 };
+
+export function isCurrentWeatherSourceDto(data: unknown): data is CurrentWeatherSourceDto {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const record = data as Record<string, unknown>;
+	return (
+		typeof record['id'] === 'number' &&
+		(typeof record['dwd_station_id'] === 'string' || record['dwd_station_id'] === null) &&
+		typeof record['wmo_station_id'] === 'string' &&
+		typeof record['station_name'] === 'string' &&
+		typeof record['observation_type'] === 'string' &&
+		typeof record['first_record'] === 'string' &&
+		typeof record['last_record'] === 'string' &&
+		typeof record['lat'] === 'number' &&
+		typeof record['lon'] === 'number' &&
+		typeof record['height'] === 'number' &&
+		(typeof record['distance'] === 'number' || record['distance'] === null)
+	);
+}
+
 /** Root response from GET /current_weather */
 export type WeatherDataDto = {
 	weather: CurrentWeatherDto;
 	sources: CurrentWeatherSourceDto[];
 };
+
+export function isWeatherDataDto(data: unknown): data is WeatherDataDto {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const record = data as Record<string, unknown>;
+	return (
+		isCurrentWeatherDto(record['weather']) &&
+		Array.isArray(record['sources']) &&
+		record['sources'].every(isCurrentWeatherSourceDto)
+	);
+}

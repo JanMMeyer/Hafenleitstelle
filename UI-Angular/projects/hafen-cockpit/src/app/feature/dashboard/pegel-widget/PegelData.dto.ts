@@ -7,12 +7,15 @@ export type PegelGaugeZeroDto = {
 };
 
 export function isPegelGaugeZeroDto(data: unknown): data is PegelGaugeZeroDto {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const record = data as Record<string, unknown>;
 	return (
-		typeof data === 'object' &&
-		data !== null &&
-		'unit' in data &&
-		'value' in data &&
-		'validFrom' in data
+		typeof record['unit'] === 'string' &&
+		typeof record['value'] === 'number' &&
+		typeof record['validFrom'] === 'string'
 	);
 }
 
@@ -45,13 +48,16 @@ export type PegelCurrentMeasurementDto = {
 };
 
 export function isPegelCurrentMeasurementDto(data: unknown): data is PegelCurrentMeasurementDto {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const record = data as Record<string, unknown>;
 	return (
-		typeof data === 'object' &&
-		data !== null &&
-		'timestamp' in data &&
-		'value' in data &&
-		'stateMnwMhw' in data &&
-		'stateNswHsw' in data
+		typeof record['timestamp'] === 'string' &&
+		typeof record['value'] === 'number' &&
+		typeof record['stateMnwMhw'] === 'string' &&
+		typeof record['stateNswHsw'] === 'string'
 	);
 }
 
@@ -66,21 +72,37 @@ export type PegelDataDto = {
 
 // AI generated and checked
 export function isPegelDataDto(data: unknown): data is PegelDataDto {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const record = data as Record<string, unknown>;
 	return (
-		typeof data === 'object' &&
-		data !== null &&
-		'shortname' in data &&
-		'longname' in data &&
-		'unit' in data &&
-		'equidistance' in data &&
-		'currentMeasurement' in data &&
-		'gaugeZero' in data
+		typeof record['shortname'] === 'string' &&
+		typeof record['longname'] === 'string' &&
+		typeof record['unit'] === 'string' &&
+		typeof record['equidistance'] === 'number' &&
+		isPegelCurrentMeasurementDto(record['currentMeasurement']) &&
+		isPegelGaugeZeroDto(record['gaugeZero'])
 	);
 }
 
-export type PegelHistoItemDto = {
+export type PegelMeasurementDto = {
 	timestamp: string;
 	value: number;
 };
 
-export type PegelHistoDataDto = PegelHistoItemDto[];
+export function isPegelMeasurementDto(data: unknown): data is PegelMeasurementDto {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const record = data as Record<string, unknown>;
+	return typeof record['timestamp'] === 'string' && typeof record['value'] === 'number';
+}
+
+export type PegelMeasurementDataDto = PegelMeasurementDto[];
+
+export function isPegelMeasurementDataDto(data: unknown): data is PegelMeasurementDataDto {
+	return Array.isArray(data) && data.every(isPegelMeasurementDto);
+}
