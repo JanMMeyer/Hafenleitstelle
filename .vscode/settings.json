@@ -1,0 +1,50 @@
+{
+  // "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnPaste": false, // required
+  "editor.formatOnType": false, // required
+  "editor.formatOnSave": true, // optional
+  "editor.formatOnSaveMode": "file", // required to format on save
+  // "files.autoSave": "onFocusChange", // optional but recommended
+  "diffEditor.ignoreTrimWhitespace": true,
+  "hidefiles.configurationType": "local",
+  "hidefiles.globalConfig": {
+    "profiles": [
+      {
+        "name": "Default",
+        "detail": "",
+        "description": "Test",
+        "hidden": [
+          "UI-Angular/node_modules/",
+          "UI-Angular/.angular/",
+          "UI-Angular/.husky/",
+          "UI-Angular/dist/"
+        ]
+      },
+      {
+        "name": "Strict",
+        "detail": "Hide everything not immediately required",
+        "hidden": ["$Default"]
+      }
+    ]
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "UI-Angular/node_modules/": true,
+    "UI-Angular/.angular/": true,
+    "UI-Angular/.husky/": true,
+    "UI-Angular/dist/": true
+  },
+  "hidefiles.selectedProfile": "Default",
+  "cSpell.words": ["gridstack", "Histo", "pegel"]
+}

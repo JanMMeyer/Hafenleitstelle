@@ -1,11 +1,14 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
 
+export type MockHttpErrorStatus = 500 | 408;
+
 @Injectable({
 	providedIn: 'root',
 })
 export class ErrorMockingService {
 	public readonly httpErrorPeriod: WritableSignal<number> = signal(0);
 	public readonly httpLatency: WritableSignal<number> = signal(0);
+	public readonly httpErrorStatus: WritableSignal<MockHttpErrorStatus> = signal(500);
 	private callCounter: number = 0;
 
 	/**

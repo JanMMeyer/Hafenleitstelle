@@ -1,42 +1,103 @@
-import { Component, computed, inject, OnDestroy, OnInit, signal, Signal, WritableSignal } from '@angular/core';
-import { WidgetContainer } from '@cockpit/app/shared/widget/container/container';
-import { PegelWidgetService } from './pegel-widget.service';
-import { HttpError } from '@cockpit/app/core/errorHandling/httpError.class';
-import { WithError } from '@cockpit/app/core/errorHandling/WithError.type';
-import { isPegelDataDto, PegelDataDto } from './PegellData.dto';
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { AsyncOutlet } from '@cockpit/app/core/async-outlet/async-outlet';
+import { getCappedRefreshBlockSignal } from '@cockpit/app/shared/capRefreshBlock.utils';
+import { Widget } from '@cockpit/app/shared/widget/widget';
+import { DashboardService } from '../dashboard.service';
+import { PegelCurrentService } from './pegel-current.service';
+import { PegelRelationPipe } from './pegel-relation.pipe';
+import { PegelDataDto } from './PegelData.dto';
+import { BaseChartDirective } from 'ng2-charts';
+import { PegelHistoService } from './pegel-histo.service';
 
-type ExhaustableWithError<TData, TError extends Error> =
-{ value: TData, type: 'data' } | { value: TError, type: 'error' } | { value: undefined, type: 'undefined' };
 @Component({
 	selector: 'app-pegel-widget',
-	imports: [WidgetContainer],
-	templateUrl: './pegel-widget.html',
-	styleUrl: './pegel-widget.scss',
-})
-export class PegelWidget implements OnInit, OnDestroy {
-
-
-	public readonly pegelService: PegelWidgetService = inject(PegelWidgetService);
-	// TODO: put in shared
-	public readonly pegelCurrentExhaustable: Signal<ExhaustableWithError<PegelDataDto, HttpError>> = computed(() => {
-		const value: WithError<PegelDataDto, HttpError> | undefined = this.pegelService.pegelCurrent();
-		if (!value) {
-			return { value: undefined, type: 'undefined' };
-		} else if (isPegelDataDto(value)) {
-			return { value, type: 'data' };
-		} else if (value instanceof HttpError) {
-			return { value, type: 'error' };
+	imports: [
+		AsyncOutlet,
+		MatCardModule,
+		MatListModule,
+		PegelRelationPipe,
+		DatePipe,
+		MatIconModule,
+		MatButtonModule,
+		BaseChartDirective,
+	],
+	providers: [PegelCurrentService, PegelHistoService],
+	template: `
+		<mat-card>
+			<mat-card-content>
+				<button
+					class="top-right show-hover-only fade-parent-hover"
+					matMiniFab
+					(click)="refresh()"
+					[disabled]="refreshBlocked()"
+				>
+					<mat-icon>refresh</mat-icon>
+				</button>
+				<mat-list *appAsyncOutlet="pegelCurrentService; showRefresh: false; let pegel = data">
+					<mat-list-item>
+						Stand&nbsp;{{ pegel.currentMeasurement.timestamp | date: 'dd.MM.yy HH:mm' }}
+					</mat-list-item>
+					<mat-list-item>
+						<span matListItemTitle>Wasserstand </span>
+						<span matListItemLine
+							>{{ pegel.currentMeasurement.value
+							}}<span class="data-unit">{{ pegel.unit }}</span></span
+						>
+					</mat-list-item>
+					<mat-list-item>
+						<span matListItemTitle>Mnw/Mhw</span>
+						<span>{{ pegel.currentMeasurement.stateMnwMhw | pegelRelation }}</span>
+					</mat-list-item>
+					<mat-list-item>
+						<span matListItemTitle>Nsw/Hsw</span>
+						<span>{{ pegel.currentMeasurement.stateNswHsw | pegelRelation }}</span>
+					</mat-list-item>
+				</mat-list>
+				<ng-container
+					*appAsyncOutlet="pegelHistoService; showRefresh: false; let pegelHistoChartData = data"
+				>
+					<canvas baseChart [data]="pegelHistoChartData" [type]="'line'"> </canvas>
+				</ng-container>
+			</mat-card-content>
+		</mat-card>
+	`,
+	styles: `
+		mat-card {
+			height: 100%;
+			mat-card-content {
+				position: relative;
+				button.top-right {
+					top: 1rem;
+					right: 1rem;
+				}
+			}
 		}
-		return {} as never;
-	});
-	public readonly isPegelDataDto = isPegelDataDto;
-	// public readonly pegelHasError: Signal<bo> = computed((): this.pegelService.pegelCurrent() is PegelDataDto => this.pegelService.pegelCurrent() instanceof HttpError);
+	`,
+})
+export class PegelWidget extends Widget {
+	private readonly destroyRef = inject(DestroyRef);
 
-	public ngOnInit(): void {
-		// Only fetch data once on init
-		this.pegelService.fetchData();
-	}
-	public ngOnDestroy(): void {
-		this.pegelService.destroy();
+	public readonly pegelCurrentService: PegelCurrentService = inject(PegelCurrentService);
+	public readonly pegelHistoService: PegelHistoService = inject(PegelHistoService);
+	public readonly widgetControlService: DashboardService = inject(DashboardService);
+
+	public readonly pegelHistoGraphOptions: unknown = {
+		parsing: {
+			xAxisKey: 'label',
+			yAxisKey: 'value',
+		},
+	};
+	public readonly refreshBlocked: Signal<boolean> = getCappedRefreshBlockSignal({
+		isLoading$: this.pegelCurrentService.isLoading$,
+		destroyRef: this.destroyRef,
+	});
+
+	public refresh(): void {
+		this.pegelCurrentService.load();
 	}
 }

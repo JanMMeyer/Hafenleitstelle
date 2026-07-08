@@ -1,0 +1,34 @@
+@if (showRefresh()) {
+	<button
+		class="top-right show-hover-only fade-parent-hover"
+		matMiniFab
+		(click)="refresh()"
+		[disabled]="refreshBlocked()"
+	>
+		<mat-icon>refresh</mat-icon>
+	</button>
+}
+@if (asyncDataService().isLoading$ | async) {
+	<div class="progress-bar-container">
+		<mat-progress-bar mode="indeterminate"></mat-progress-bar>
+	</div>
+}
+
+@let wrappedData = wrappedSwitchData();
+@switch (wrappedData.type) {
+	@case ('undefined') {
+		<span>...loading...</span>
+	}
+	@case ('error') {
+		<span
+			>Es gibt ein Problem mit der Serververbindung, bitte versuchen sie es in ein paar minuten
+			erneut.</span
+		>
+	}
+	@case ('data') {
+		<ng-container *ngTemplateOutlet="contentTemplate(); context: { data: wrappedData.value }" />
+	}
+	<!-- For some reason prettier removes the never(), therefore: -->
+	<!-- prettier-ignore  -->
+	@default never(wrappedData);
+}
