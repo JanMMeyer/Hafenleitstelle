@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { BaseWidget } from 'gridstack/dist/angular';
 import { WidgetControl } from './WidgetControl.type';
 

@@ -1,0 +1,80 @@
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
+import { AsyncDataSourceService } from '@cockpit/app/shared/async-data-source/abstract.async-data.service';
+import { map, Observable, tap } from 'rxjs';
+import { PegelChartData } from './PegelChartData.model';
+import {
+	isPegelMeasurementDataDto,
+	PegelMeasurementDataDto,
+	PegelMeasurementDto,
+} from './PegelData.dto';
+
+//  TODO location as injectable token
+
+const locationUUID: string = 'd488c5cc-4de9-4631-8ce1-0db0e700b546';
+
+// /W/measurements.json?start=P7D&width=440&height=220';
+
+// TODO use ng-openapi gen with  https://raw.githubusercontent.com/bundesAPI/pegel-online-api/main/openapi.yaml
+@Injectable()
+export class PegelChartService
+	extends AsyncDataSourceService<PegelChartData>
+	implements AsyncDataSource<PegelChartData>
+{
+	private readonly baseApiUrlString: string =
+		'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/';
+
+	private readonly histoDataUrl: URL;
+	private readonly forecastDataUrl: URL;
+	private readonly http: HttpClient = inject(HttpClient);
+
+	public constructor() {
+		super();
+		const histoEndpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/W/`;
+		if (!URL.canParse(histoEndpointUrlString)) {
+			// failing as early as possible
+			throw new URIError('Endpoint URL is not a valid URL:' + histoEndpointUrlString);
+		}
+		const histoEndpointUrl: URL = new URL('measurements.json', histoEndpointUrlString);
+		histoEndpointUrl.searchParams.append('start', 'P1D');
+		this.histoDataUrl = histoEndpointUrl;
+
+		const forecastEndpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/F/`;
+		if (!URL.canParse(forecastEndpointUrlString)) {
+			// failing as early as possible
+			throw new URIError('Endpoint URL is not a valid URL:' + forecastEndpointUrlString);
+		}
+		const forecastEndpointUrl: URL = new URL('measurements.json', forecastEndpointUrlString);
+		this.forecastDataUrl = forecastEndpointUrl;
+	}
+
+	protected override fetchData(): Observable<PegelChartData> {
+		return this.fetchHistoData();
+		const chartData: PegelHistoChartData = {
+			datasets: [{ data }],
+		};
+	}
+
+	private fetchHistoData(): Observable<PegelMeasurementDataDto> {
+		console.log('fetching PegelHisto');
+		return this.http.get<PegelMeasurementDataDto>(this.histoDataUrl.toString()).pipe(
+			tap((data) => {
+				if (!isPegelMeasurementDataDto(data)) {
+					throw new TypeError('Invalid data in fetchHistoData', { cause: data });
+				}
+			}),
+		);
+	}
+
+	private fetchForecastData(): Observable<PegelMeasurementDataDto> {
+		console.log('fetching PegelHisto');
+		return this.http.get<PegelMeasurementDataDto>(this.forecastDataUrl.toString()).pipe(
+			tap((data) => {
+				if (!isPegelMeasurementDataDto(data)) {
+					throw new TypeError('Invalid data in fetchHistoData', { cause: data });
+				}
+			}),
+		);
+	}
+}
