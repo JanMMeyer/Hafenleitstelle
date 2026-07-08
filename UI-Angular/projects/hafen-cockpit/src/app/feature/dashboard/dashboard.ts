@@ -6,90 +6,23 @@ import { Serializable } from '@cockpit/app/core/types/Basic.type';
 import { GridStack, GridStackWidget } from 'gridstack';
 import { GridstackComponent, NgGridStackOptions, NgGridStackWidget } from 'gridstack/dist/angular';
 import { DashboardService } from './dashboard.service';
-import { PegelWidget } from './pegel-widget/pegel-widget';
-import { WeatherWidget } from './weather-widget/weather-widget';
-import { WeatherAlertWidget } from './weather-alert-widget/weather-alert-widget';
+import { PegelWidget } from './widgets/pegel-widget/pegel-widget';
+import { WeatherWidget } from './widgets/weather-widget/weather-widget';
+import { WeatherAlertWidget } from './widgets/weather-alert-widget/weather-alert-widget';
+import { GridstackItem } from './layout-components/gridstack-item/gridstack-item';
 @Component({
 	selector: 'app-dashboard',
 	imports: [
 		GridstackComponent,
+		GridstackItem,
 		MatButtonModule,
 		MatIconModule,
 		PegelWidget,
 		WeatherWidget,
 		WeatherAlertWidget,
 	],
-	template: `
-		<div class="top-right show-hover-only fade-parent-hover button-container">
-			<button class="" matMiniFab (click)="toggleSidePanel()">
-				<mat-icon>settings</mat-icon>
-			</button>
-			<button class="" matMiniFab (click)="refreshAll()" [disabled]="refreshBlocked()">
-				<mat-icon>refresh</mat-icon>
-			</button>
-		</div>
-
-		<gridstack
-			#widgetGrid
-			[options]="gridOptions"
-			(change)="onGridChange()"
-			(removedCB)="onGridChange()"
-		/>
-
-		<aside class="side-panel" [class.hidden]="!showSidePanel()">
-			<div class="grid-stack-item">
-				<app-pegel-widget class="grid-stack-item-content" />
-			</div>
-
-			<div class="grid-stack-item">
-				<app-weather-widget class="grid-stack-item-content" />
-			</div>
-			<div class="grid-stack-item">
-				<app-weather-alert-widget class="grid-stack-item-content" />
-			</div>
-		</aside>
-	`,
-	styles: `
-		:host {
-			position: relative;
-			display: flex;
-			gap: 1rem;
-			align-items: stretch;
-			// display: grid;
-			// grid-template-columns: 1fr min-content;
-			// grid-template-areas: 'widget-grid side-panel';
-			max-height: 100%;
-			height: 100%;
-			.grid-stack {
-				flex-grow: 1;
-				// grid-area: widget-grid;
-				// display: block;
-				// max-height: 100%;
-				// height: 100%;
-				background: plum;
-			}
-			.side-panel {
-				// grid-area: side-panel;
-				// position: absolute;
-				// top: 30px;
-				// right: 0;
-				// z-index: 3;
-				&.hidden {
-					display: none;
-					// width: 1px;
-					// // flex-basis: 1px;
-					// visibility: hidden;
-				}
-				display: flex;
-				flex-direction: column;
-				gap: 0.8rem;
-				width: min-content;
-				.grid-stack-item {
-					// margin-bottom: -2rem; // naughty... explore better solution
-				}
-			}
-		}
-	`,
+	templateUrl: './dashboard.html',
+	styleUrls: ['./dashboard.scss'],
 })
 export class Dashboard {
 	public readonly showSidePanel: WritableSignal<boolean> = signal(false);
@@ -98,8 +31,8 @@ export class Dashboard {
 
 	// Brittle Warning: Order Must correspond to order in Templates side-panel
 	public readonly sidebarWidgets: NgGridStackWidget[] = [
-		{ selector: 'app-pegel-widget', w: 7, h: 4 },
-		{ selector: 'app-weather-widget', w: 3, h: 4 },
+		{ selector: 'app-pegel-widget', w: 5, h: 3 },
+		{ selector: 'app-weather-widget', w: 2, h: 3 },
 		{ selector: 'app-weather-alert-widget', w: 6, h: 4 },
 	];
 
@@ -111,9 +44,11 @@ export class Dashboard {
 
 	public gridOptions: NgGridStackOptions = {
 		maxRow: 8,
+		row: 8,
+		cellHeight: 12.5,
+		cellHeightUnit: '%',
 		// margin: 5,
 		acceptWidgets: true,
-		removable: '.trash',
 	};
 
 	public ngAfterViewInit() {
@@ -125,7 +60,7 @@ export class Dashboard {
 		GridStack.setupDragIn(
 			'.side-panel .grid-stack-item',
 			{
-				handle: '.grid-stack-item-content',
+				handle: '.grid-stack-drag-handle',
 			},
 			this.sidebarWidgets,
 		);

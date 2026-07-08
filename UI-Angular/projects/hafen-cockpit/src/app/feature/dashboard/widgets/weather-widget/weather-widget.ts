@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { AsyncOutlet } from '@cockpit/app/core/async-outlet/async-outlet';
 import { Widget } from '@cockpit/app/shared/widget/widget';
-import { DashboardService } from '../dashboard.service';
+import { DashboardService } from '../../dashboard.service';
 import { WeatherWidgetService } from './weather.service';
 // using https://erikflowers.github.io/weather-icons/
 @Component({

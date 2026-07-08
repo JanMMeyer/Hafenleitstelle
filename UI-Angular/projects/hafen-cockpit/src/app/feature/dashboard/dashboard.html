@@ -1,0 +1,31 @@
+<div class="button-container top-right show-hover-only fade-parent-hover">
+	<button matMiniFab (click)="toggleSidePanel()">
+		<mat-icon>add</mat-icon>
+	</button>
+	<button matMiniFab (click)="refreshAll()" [disabled]="refreshBlocked()">
+		<mat-icon>refresh</mat-icon>
+	</button>
+</div>
+
+<gridstack
+	#widgetGrid
+	[options]="gridOptions"
+	(change)="onGridChange()"
+	(addedCB)="onGridChange()"
+	(removedCB)="onGridChange()"
+	[class.sidebar-open]="showSidePanel()"
+/>
+
+<aside class="side-panel" [class.hidden]="!showSidePanel()">
+	<app-gridstack-item>
+		<app-pegel-widget class="widget" />
+	</app-gridstack-item>
+
+	<app-gridstack-item>
+		<app-weather-widget class="widget" />
+	</app-gridstack-item>
+
+	<app-gridstack-item>
+		<app-weather-alert-widget class="widget" />
+	</app-gridstack-item>
+</aside>

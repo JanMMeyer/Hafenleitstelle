@@ -2,11 +2,9 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { AsyncDataSourceService } from '@cockpit/app/shared/async-data-source/abstract.async-data.service';
+import { environment } from '@cockpit/environments';
 import { Observable, tap } from 'rxjs';
 import { isPegelDataDto, PegelDataDto } from './PegelData.dto';
-
-//  TODO from environment that can be set during build time, for other customers deployments with other locations
-const locationUUID: string = 'd488c5cc-4de9-4631-8ce1-0db0e700b546';
 
 // TODO use ng-openapi gen with  https://raw.githubusercontent.com/bundesAPI/pegel-online-api/main/openapi.yaml
 @Injectable()
@@ -23,7 +21,7 @@ export class PegelCurrentService
 
 	public constructor() {
 		super();
-		const endpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/`;
+		const endpointUrlString: string = `${this.baseApiUrlString}${environment.pegelStationUuid}/`;
 		if (!URL.canParse(endpointUrlString)) {
 			throw new URIError('Endpoint URL is not a valid URL:' + endpointUrlString);
 		}

@@ -2,13 +2,10 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { AsyncDataSourceService } from '@cockpit/app/shared/async-data-source/abstract.async-data.service';
+import { environment } from '@cockpit/environments';
 import { catchError, combineLatest, forkJoin, map, Observable, of, tap } from 'rxjs';
 import { PegelChartData } from './PegelChartData.model';
 import { isPegelMeasurementDataDto, PegelMeasurementDataDto } from './PegelData.dto';
-
-//  TODO location as injectable token
-
-const locationUUID: string = 'd488c5cc-4de9-4631-8ce1-0db0e700b546';
 
 // /W/measurements.json?start=P7D&width=440&height=220';
 
@@ -28,7 +25,7 @@ export class PegelChartService
 	public constructor() {
 		super();
 
-		const histoEndpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/W/`;
+		const histoEndpointUrlString: string = `${this.baseApiUrlString}${environment.pegelStationUuid}/W/`;
 		if (!URL.canParse(histoEndpointUrlString)) {
 			// failing as early as possible
 			throw new URIError('Endpoint URL is not a valid URL:' + histoEndpointUrlString);
@@ -37,7 +34,7 @@ export class PegelChartService
 		histoEndpointUrl.searchParams.append('start', 'P1D');
 		this.histoDataUrl = histoEndpointUrl;
 
-		const forecastEndpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/WV/`;
+		const forecastEndpointUrlString: string = `${this.baseApiUrlString}${environment.pegelStationUuid}/WV/`;
 		if (!URL.canParse(forecastEndpointUrlString)) {
 			// failing as early as possible
 			throw new URIError('Endpoint URL is not a valid URL:' + forecastEndpointUrlString);

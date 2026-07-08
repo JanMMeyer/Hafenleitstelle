@@ -40,10 +40,6 @@ body {
 }
 
 // TODO: move all following to proper theme customization file
-.debug {
-	border: 1px solid hotpink;
-	background-color: lightgreen;
-}
 
 :root {
 	@include mat.list-overrides(
@@ -89,5 +85,9 @@ mat-list-item {
 	}
 }
 *:hover > .fade-parent-hover:not(:hover) {
+	opacity: 0.5;
+}
+
+*:hover > * > .fade-grand-parent-hover:not(:hover) {
 	opacity: 0.5;
 }

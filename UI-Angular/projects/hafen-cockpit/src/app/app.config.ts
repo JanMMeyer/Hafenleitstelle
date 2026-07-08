@@ -1,7 +1,8 @@
 import { ApplicationConfig, ErrorHandler } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
-import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { environment } from '@cockpit/environments';
 import { routes } from './app.routes';
 import { httpErrorLoggingInterceptor } from './core/errorHandling/errorLogging.interceptor';
 import { ErrorLoggingService } from './core/errorHandling/errorLogging.service';
@@ -20,18 +21,18 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 // Erwägung: JSON Validation im interceptor um alle json responses zu validieren.
 // Bei vorhandener ApiSpec wären "onBuild" generierte Endpoints vorzuziehen -> fail on build besser als fail at runtime.
 // Vorteil: Klareres Bug tracking -> fehler liegt an missmatch von erwarteter und tatsächlicher response.
+const httpInterceptors = [
+	httpErrorLoggingInterceptor,
+	httpErrorRetryInterceptor,
+	...(environment.production ? [] : [httpErrorMockingInterceptor]),
+];
+
 export const appConfig: ApplicationConfig = {
 	providers: [
 		{ provide: ErrorHandler, useClass: GlobalAppErrorHandler, deps: [ErrorLoggingService] },
 		// Interceptors are executed in the order they are provided for a REQUEST. Meaning that the LAST interceptor sees the RESPONSE first.
 		//                                  REQEST execution order ->                               <- RESPONSE execution order
-		provideHttpClient(
-			withInterceptors([
-				httpErrorLoggingInterceptor,
-				httpErrorRetryInterceptor,
-				httpErrorMockingInterceptor,
-			]),
-		),
+		provideHttpClient(withInterceptors(httpInterceptors)),
 		provideRouter(routes),
 		provideCharts(withDefaultRegisterables()),
 	],

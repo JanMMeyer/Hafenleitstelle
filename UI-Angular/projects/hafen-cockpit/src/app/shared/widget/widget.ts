@@ -11,6 +11,8 @@ import {
 import { BaseWidget } from 'gridstack/dist/angular';
 import { WidgetControl } from './WidgetControl.type';
 import { GridItemHTMLElement } from 'gridstack';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
 	template: ``,
@@ -52,29 +54,43 @@ export abstract class Widget extends BaseWidget implements OnInit {
 }
 
 @Component({
-	template: `<div class="remove-button" (click)="onRemove.emit()">
-		<span>X</span>
-	</div> `,
+	imports: [MatButtonModule, MatIconModule],
+	template: `
+		<button
+			matMiniFab
+			(click)="onRemove.emit()"
+			class="remove-button show-hover-only fade-grand-parent-hover"
+		>
+			<mat-icon>delete</mat-icon>
+		</button>
+	`,
 	styles: `
-		.remove-button {
-			position: absolute;
-			bottom: 2px;
-			right: 18px;
-
-			width: 16px;
-			height: 16px;
-
-			display: flex;
-			padding-top: 2px;
-			align-items: center;
-			justify-content: center;
-
-			color: red;
-			cursor: pointer;
-			border-radius: 4px;
-
+		:host {
 			&:hover {
-				background-color: rgba(255, 0, 0, 0.1);
+				.remove-button {
+					opacity: 1;
+				}
+			}
+			.remove-button {
+				position: absolute;
+				top: 63px;
+				right: 18px;
+
+				// width: 16px;
+				// height: 16px;
+
+				// display: flex;
+				// padding-top: 2px;
+				// align-items: center;
+				// justify-content: center;
+
+				// color: red;
+				// cursor: pointer;
+				// border-radius: 4px;
+
+				// &:hover {
+				// 	background-color: rgba(255, 0, 0, 0.1);
+				// }
 			}
 		}
 	`,

@@ -6,7 +6,9 @@ import { ChartOptions } from 'chart.js';
 
 export const pegelHistoGraphOptions: ChartOptions<'line'> = {
 	// Width-to-height ratio when maintainAspectRatio is true (default).
-	aspectRatio: 1.3,
+	// aspectRatio: 2,
+	responsive: true,
+	maintainAspectRatio: false,
 
 	// Map PegelHistoItemDto fields to x/y without reshaping the dataset.
 	parsing: {

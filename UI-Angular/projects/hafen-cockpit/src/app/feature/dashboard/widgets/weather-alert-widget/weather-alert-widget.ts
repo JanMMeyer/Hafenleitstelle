@@ -2,12 +2,10 @@ import { Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { AsyncOutlet } from '@cockpit/app/core/async-outlet/async-outlet';
-import { BaseWidget } from 'gridstack/dist/angular';
+import { Widget } from '@cockpit/app/shared/widget/widget';
+import { DashboardService } from '../../dashboard.service';
 import { WeatherAlert } from './alert/weather-alert';
 import { WeatherAlertWidgetService } from './weather-alert.service';
-import { Widget } from '@cockpit/app/shared/widget/widget';
-import { DashboardService } from '../dashboard.service';
-import { WeatherAlertsDto } from './WeatherAlert.dto';
 
 @Component({
 	selector: 'app-weather-alert-widget',

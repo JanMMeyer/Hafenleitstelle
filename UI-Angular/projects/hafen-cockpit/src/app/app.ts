@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HttpErrorMockingControl } from '@cockpit/app/core/errorHandling/errorMocking/httpErrorMockingControl.component';
+import { environment } from '@cockpit/environments';
 import { GridstackComponent } from 'gridstack/dist/angular';
-import { PegelWidget } from './feature/dashboard/pegel-widget/pegel-widget';
-import { WeatherAlertWidget } from './feature/dashboard/weather-alert-widget/weather-alert-widget';
-import { WeatherWidget } from './feature/dashboard/weather-widget/weather-widget';
+import { PegelWidget } from './feature/dashboard/widgets/pegel-widget/pegel-widget';
+import { WeatherAlertWidget } from './feature/dashboard/widgets/weather-alert-widget/weather-alert-widget';
+import { WeatherWidget } from './feature/dashboard/widgets/weather-widget/weather-widget';
 
 /* ---- AI disclaimer ----
 
@@ -24,12 +25,11 @@ and finding the most elegant solution for passing the context to the content of 
 @Component({
 	selector: 'app-root',
 	imports: [HttpErrorMockingControl, RouterOutlet],
-	host: {
-		class: 'debug',
-	},
 	template: `
 		<router-outlet />
-		<app-http-error-period-control />
+		@if (!environment.production) {
+			<app-http-error-period-control />
+		}
 	`,
 	styles: `
 		:host {
@@ -37,10 +37,12 @@ and finding the most elegant solution for passing the context to the content of 
 			padding: 1rem;
 			display: block;
 			height: 100%;
+			background-color: var(--mat-sys-surface-variant);
 		}
 	`,
 })
 export class App {
+	protected readonly environment = environment;
 	protected readonly title = signal('Hafen-Cockpit');
 	constructor() {
 		GridstackComponent.addComponentToSelectorType([PegelWidget, WeatherWidget, WeatherAlertWidget]);

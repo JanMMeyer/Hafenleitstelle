@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, inject, Signal } from '@angular/core';
+import { Component, DestroyRef, inject, Signal, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,10 +10,12 @@ import { Widget } from '@cockpit/app/shared/widget/widget';
 import { ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import 'chartjs-adapter-date-fns';
-import { DashboardService } from '../dashboard.service';
+import { DashboardService } from '../../dashboard.service';
 import { PegelCurrentService } from './pegel-current.service';
 import { PegelChartService } from './pegel-chart.service';
 import { PegelRelationPipe } from './pegel-relation.pipe';
+import { pegelHistoGraphOptions } from './pegel-histo-chart.options';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
 	selector: 'app-pegel-widget',
@@ -32,7 +34,7 @@ import { PegelRelationPipe } from './pegel-relation.pipe';
 		<mat-card>
 			<mat-card-content>
 				<button
-					class="top-right show-hover-only fade-parent-hover"
+					class="top-right show-hover-only fade-grand-parent-hover"
 					matMiniFab
 					(click)="refresh()"
 					[disabled]="refreshBlocked()"
@@ -59,17 +61,19 @@ import { PegelRelationPipe } from './pegel-relation.pipe';
 						<span>{{ pegel.currentMeasurement.stateNswHsw | pegelRelation }}</span>
 					</mat-list-item>
 				</mat-list>
-				<ng-container
-					*appAsyncOutlet="pegelHistoService; showRefresh: false; let pegelHistoChartData = data"
-				>
-					<canvas
-						baseChart
-						[data]="pegelHistoChartData"
-						[type]="'line'"
-						[options]="pegelHistoGraphOptions"
+				<div class="chart-container">
+					<ng-container
+						*appAsyncOutlet="pegelHistoService; showRefresh: false; let pegelHistoChartData = data"
 					>
-					</canvas>
-				</ng-container>
+						<canvas
+							baseChart
+							[data]="pegelHistoChartData"
+							[type]="'line'"
+							[options]="pegelHistoGraphOptions"
+						>
+						</canvas>
+					</ng-container>
+				</div>
 			</mat-card-content>
 		</mat-card>
 	`,
@@ -77,8 +81,16 @@ import { PegelRelationPipe } from './pegel-relation.pipe';
 		mat-card {
 			height: 100%;
 			mat-card-content {
+				height: 100%;
 				display: flex;
 				position: relative;
+				box-sizing: border-box;
+				max-width: 100%;
+				.chart-container {
+					flex: 1;
+					min-width: 0;
+					// flex-basis: auto;
+				}
 				button.top-right {
 					top: 1rem;
 					right: 1rem;
@@ -89,49 +101,30 @@ import { PegelRelationPipe } from './pegel-relation.pipe';
 })
 export class PegelWidget extends Widget {
 	private readonly destroyRef = inject(DestroyRef);
+	private readonly pegelChart: Signal<BaseChartDirective | undefined> =
+		// viewChild<BaseChartDirective>('[baseChart]');
+		viewChild(BaseChartDirective);
 
 	public readonly pegelCurrentService: PegelCurrentService = inject(PegelCurrentService);
 	public readonly pegelHistoService: PegelChartService = inject(PegelChartService);
+
 	public readonly widgetControlService: DashboardService = inject(DashboardService);
 
-	public readonly pegelHistoGraphOptions: ChartOptions = {
-		aspectRatio: 1.3,
-		parsing: {
-			// xAxisKey: 'timelabel',
-			xAxisKey: 'timestamp',
-			yAxisKey: 'value',
-		},
-		scales: {
-			x: {
-				type: 'time',
-				time: {
-					unit: 'hour',
-					displayFormats: { hour: 'HH:mm' },
-				},
-				ticks: {},
-			},
-		},
-		elements: {
-			point: {
-				radius: 0,
-				hoverRadius: 4,
-				hitRadius: 10,
-			},
-			line: {
-				tension: 0.6,
-				cubicInterpolationMode: 'monotone',
-			},
-		},
-		plugins: {
-			legend: {
-				display: false,
-			},
-		},
-	};
+	public readonly pegelHistoGraphOptions: ChartOptions<'line'> = pegelHistoGraphOptions;
+
 	public readonly refreshBlocked: Signal<boolean> = getCappedRefreshBlockSignal({
 		isLoading$: this.pegelCurrentService.isLoading$,
 		destroyRef: this.destroyRef,
 	});
+
+	constructor() {
+		super();
+		this.widgetControlService.layoutChanged$
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe(() => {
+				this.pegelChart()?.chart?.resize();
+			});
+	}
 
 	public refresh(): void {
 		this.pegelCurrentService.load();

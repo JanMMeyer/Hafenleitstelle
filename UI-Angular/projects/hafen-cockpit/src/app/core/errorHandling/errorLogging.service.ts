@@ -1,9 +1,7 @@
 import { HttpClient, HttpContext, HttpContextToken, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '@cockpit/environments';
 import { ErrorLoggingError } from './httpError.class';
-
-// consider to  use injection token
-const ERROR_LOGGING_CONFIG = { errorLoggingUrl: 'https://error.logging.url' };
 
 export const SKIP_LOGGING_INTERCEPTOR = new HttpContextToken<boolean>(() => false);
 const ERROR_LOGGING_CONTEXT: HttpContext = new HttpContext().set(SKIP_LOGGING_INTERCEPTOR, true);
@@ -19,7 +17,7 @@ export class ErrorLoggingService {
 
 		this.http
 			.post(
-				ERROR_LOGGING_CONFIG.errorLoggingUrl,
+				environment.errorLoggingUrl,
 				{ error: errorToLog },
 				{ context: ERROR_LOGGING_CONTEXT },
 			)

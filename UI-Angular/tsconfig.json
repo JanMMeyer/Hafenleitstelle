@@ -17,6 +17,7 @@
 		"target": "ES2022",
 		"module": "preserve",
 		"paths": {
+			"@cockpit/environments": ["./projects/hafen-cockpit/src/environments/environment"],
 			"@cockpit/app/*": ["./projects/hafen-cockpit/src/app/*"],
 			"@cockpit/shared/*": ["./projects/hafen-cockpit/src/app/shared/*"],
 			"@cockpit/feature/*": ["./projects/hafen-cockpit/src/app/feature/*"],
