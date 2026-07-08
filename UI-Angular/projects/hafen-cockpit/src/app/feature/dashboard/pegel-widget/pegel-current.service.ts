@@ -25,8 +25,7 @@ export class PegelCurrentService
 		super();
 		const endpointUrlString: string = `${this.baseApiUrlString}${locationUUID}/`;
 		if (!URL.canParse(endpointUrlString)) {
-			// hope this fails at compile time
-			throw new Error('Endpoint URL is not a valid URL');
+			throw new URIError('Endpoint URL is not a valid URL:' + endpointUrlString);
 		}
 		// W.json?includeCurrentMeasurement=true bringt laut Doku "Die Wasserstandszeitreihe des Pegels [...] mit dem aktuelle Messwert."
 		// stimmt aber nicht, es enthält NUR currentMeasurement, aber keine Timeseries....

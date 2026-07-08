@@ -2,13 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { AsyncDataSourceService } from '@cockpit/app/shared/async-data-source/abstract.async-data.service';
-import { map, Observable, tap } from 'rxjs';
+import { combineLatest, map, Observable, tap } from 'rxjs';
 import { PegelChartData } from './PegelChartData.model';
-import {
-	isPegelMeasurementDataDto,
-	PegelMeasurementDataDto,
-	PegelMeasurementDto,
-} from './PegelData.dto';
+import { isPegelMeasurementDataDto, PegelMeasurementDataDto } from './PegelData.dto';
 
 //  TODO location as injectable token
 
@@ -50,10 +46,23 @@ export class PegelChartService
 	}
 
 	protected override fetchData(): Observable<PegelChartData> {
-		return this.fetchHistoData();
-		const chartData: PegelHistoChartData = {
-			datasets: [{ data }],
-		};
+		// use the right rxjs operator to combine the two observables, one that fires once and  completes
+		return combineLatest({ histo: this.fetchHistoData(), forecast: this.fetchForecastData() }).pipe(
+			map(
+				({
+					histo,
+					forecast,
+				}: {
+					histo: PegelMeasurementDataDto;
+					forecast: PegelMeasurementDataDto;
+				}) => {
+					const chartData: PegelChartData = {
+						datasets: [{ data: histo }, { data: forecast }],
+					};
+					return chartData;
+				},
+			),
+		);
 	}
 
 	private fetchHistoData(): Observable<PegelMeasurementDataDto> {
