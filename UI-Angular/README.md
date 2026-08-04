@@ -57,3 +57,12 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+### Lessons Learned oder Was ich mit 5 zusätzlichen Stunden machen würde.
+
+- Include call stack oder endpoint info in Http error in error Logging Service.
+- Bessere Modularisierung der Widgets, so dass die buttons nicht absolut positioniert werden müssen
+- Overlapp der App buttons mit widgets vermeiden.
+- Falls dann noch zeit ist: Es ist manchmal nicht ersichtlich warum man ein widget nicht plaziern kann, das liegt daran, dass "kein platz" mehr auf dem canvas ist. (Wegen Requirement "Fullschreen app auf Monitor im Situation room": Um Scrollbars zu vermeiden, hat der Canvas eine feste größe.)
+  Entweder: immer platzierung ermoglichen Durch Dynamische größe der widgets/canvas bei platzierung abhängig von der screen size. Das kann aber sogar das die Demo vom framework selbst nicht...
+  Oder: Bessere graphische Rückmeldung, die überlapp anzeigt. Nutzer versteht dann, dass andere widgets weggeschoben oder verkleinert werden müssen.
