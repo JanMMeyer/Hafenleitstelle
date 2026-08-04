@@ -58,6 +58,8 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
 
+### Lessons Learned oder Was ich mit 5 zusätzlichen Stunden machen würde.
+
 - Tests! (so wenig hilfreich die template tests in angular auch manchmal scheinen, genau diesen bug hätten sie wahrscheinlich exponiert)
 - Include call stack oder endpoint info in Http error in error Logging Service.
 - Bessere Modularisierung der Widgets, so dass die buttons nicht absolut positioniert werden müssen
