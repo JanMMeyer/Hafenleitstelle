@@ -23,6 +23,8 @@ import { AsyncDataSource } from '../../types/AsyncDataSource.type';
 import { SwitchExhaustibleAsyncDataWrapper } from '../../types/SwitchExhaustibleAsyncDataWrapper.type';
 import { WithError } from '../../types/WithError.type';
 
+// Explicit state modeling: SwitchExhaustibleAsyncDataWrapper
+// + switch in AsyncOutletContainer makes async UI states very readable
 @Component({
 	selector: 'app-async-outlet-data',
 	imports: [

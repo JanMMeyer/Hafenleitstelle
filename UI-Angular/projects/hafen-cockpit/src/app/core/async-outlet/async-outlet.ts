@@ -40,6 +40,8 @@ export class AsyncOutlet<TData extends object> {
 	private readonly templateRef: TemplateRef<{ data: TData }> = inject(TemplateRef<{ data: TData }>);
 	private readonly vcr: ViewContainerRef = inject(ViewContainerRef);
 	private readonly effectRef: EffectRef;
+	// container ref needs to be safed, to avoid duplication on effect deps change
+	private containerRef: ComponentRef<AsyncOutletContainer<TData>> | null = null;
 
 	public readonly appAsyncOutlet: InputSignal<AsyncDataSource<TData>> = input.required();
 	public readonly appAsyncOutletShowRefresh: InputSignal<boolean> = input(true);
@@ -50,16 +52,16 @@ export class AsyncOutlet<TData extends object> {
 			const asyncOutlet = this.appAsyncOutlet();
 
 			if (!asyncOutlet) return;
-			const containerRef: ComponentRef<AsyncOutletContainer<TData>> = this.vcr.createComponent(
-				AsyncOutletContainer<TData>,
-			);
+			if (!this.containerRef) {
+				this.containerRef = this.vcr.createComponent(AsyncOutletContainer<TData>);
+			}
 			// not typesafe ...
 			// frameRef.setInput('contentTemplate', () => this.templateRef);
 			// frameRef.setInput('asyncDataService', () => this.appAsyncOutlet());
 			// ... custom wrapper to the rescue:
-			setCompRefInputTyped(containerRef, 'contentTemplate', this.templateRef);
-			setCompRefInputTyped(containerRef, 'asyncDataService', asyncOutlet);
-			setCompRefInputTyped(containerRef, 'showRefresh', showRefresh);
+			setCompRefInputTyped(this.containerRef, 'contentTemplate', this.templateRef);
+			setCompRefInputTyped(this.containerRef, 'asyncDataService', asyncOutlet);
+			setCompRefInputTyped(this.containerRef, 'showRefresh', showRefresh);
 		});
 	}
 

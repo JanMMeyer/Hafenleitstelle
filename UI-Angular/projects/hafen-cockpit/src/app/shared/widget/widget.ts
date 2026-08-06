@@ -1,5 +1,6 @@
 import {
 	Component,
+	DestroyRef,
 	ElementRef,
 	inject,
 	OnInit,
@@ -13,6 +14,7 @@ import { WidgetControl } from './WidgetControl.type';
 import { GridItemHTMLElement } from 'gridstack';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
 	template: ``,
@@ -27,10 +29,16 @@ export abstract class Widget extends BaseWidget implements OnInit {
 	private widgetElement: ElementRef<HTMLElement> = inject(ElementRef);
 	private vcr = inject(ViewContainerRef);
 
+	// Missing teardown, depending on the implementation of refresh(),
+	// this might cause unexpected behavior (ghost fetches or reloads)
+	protected readonly destroyRef = inject(DestroyRef);
+
 	public abstract readonly widgetControlService: WidgetControl;
 
 	public ngOnInit(): void {
-		this.widgetControlService.refreshAllTrigger$.subscribe(() => this.refresh());
+		this.widgetControlService.refreshAllTrigger$
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe(() => this.refresh());
 	}
 
 	public ngAfterViewInit(): void {

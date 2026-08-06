@@ -11,6 +11,9 @@ import { httpErrorRetryInterceptor } from './core/errorHandling/errorRetry.inter
 import { GlobalAppErrorHandler } from './core/errorHandling/globalAppErrorHandler.class';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
+//Dependency Inversion: app-level wiring depends on Angular’s ErrorHandler abstraction
+// and binds your concrete class in configuration
+
 // Erwägung: Http Interceptor der Header mit Session- und Request-UUID anreichert.
 // Anwendung: Error tracing, request tracking für busy state.
 

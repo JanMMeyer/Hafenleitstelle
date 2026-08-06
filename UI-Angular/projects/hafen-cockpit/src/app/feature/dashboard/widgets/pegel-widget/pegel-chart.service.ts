@@ -54,7 +54,8 @@ export class PegelChartService
 					if (
 						error instanceof HttpErrorResponse &&
 						error.status === 404 &&
-						error.error.message === 'Timeseries does not exist.'
+						// error.error has type any | null, -> error.error?.message is safe
+						error.error?.message === 'Timeseries does not exist.'
 					) {
 						return of([]);
 					}

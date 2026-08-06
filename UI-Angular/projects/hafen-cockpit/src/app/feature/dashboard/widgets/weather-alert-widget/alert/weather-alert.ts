@@ -3,6 +3,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { WeatherAlertDto, WeatherAlertLocationDto } from '../WeatherAlert.dto';
 
+// Single Responsibility:
+//  WeatherAlert is a focused presentational component:
+//  it receives alert data and renders it, without mixing in API calls,
+//  global state, or side effects
 @Component({
 	selector: 'app-weather-alert',
 	imports: [MatCardModule, MatListModule],

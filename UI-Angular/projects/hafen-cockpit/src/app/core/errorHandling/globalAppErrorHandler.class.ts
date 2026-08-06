@@ -2,16 +2,21 @@ import { ErrorHandler, inject } from '@angular/core';
 import { ErrorLoggingService } from './errorLogging.service';
 import { ErrorLoggingError } from './httpError.class';
 
+// Dependency Inversion: app-level wiring depends on Angular’s ErrorHandler abstraction
+// and binds your concrete class in configuration
 export class GlobalAppErrorHandler implements ErrorHandler {
 	private readonly errorLoggingService: ErrorLoggingService = inject(ErrorLoggingService);
 
 	public handleError(mostLikelyAnError: unknown): void {
-
-		const errorToHandle: Error = mostLikelyAnError instanceof Error? mostLikelyAnError
-			: new TypeError(`Argument is not "instance of Error". Received type: ${typeof mostLikelyAnError}`)
+		const errorToHandle: Error =
+			mostLikelyAnError instanceof Error
+				? mostLikelyAnError
+				: new TypeError(
+						`Argument is not "instance of Error". Received type: ${typeof mostLikelyAnError}`,
+					);
 
 		try {
-			this.errorLoggingService.logError(errorToHandle)
+			this.errorLoggingService.logError(errorToHandle);
 		} catch (error) {
 			console.error('ErrorLoggingService threw ', error); // no idea how to handle this properly... email support?
 		}
@@ -21,8 +26,5 @@ export class GlobalAppErrorHandler implements ErrorHandler {
 
 		// TODO: nicer popover, with reload button
 		alert('An error occurred. Please reload the page.');
-
-
-
 	}
 }

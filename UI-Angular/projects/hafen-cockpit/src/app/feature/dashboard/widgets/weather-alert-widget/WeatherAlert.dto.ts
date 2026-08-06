@@ -7,6 +7,8 @@ export type AlertUrgency = 'immediate' | 'future';
 export type AlertSeverity = 'minor' | 'moderate' | 'severe' | 'extreme';
 export type AlertCertainty = 'observed' | 'likely';
 
+// Clear boundary validation: robust DTO runtime guards for external API data
+
 /**
  * DWD weather alert (CAP message).
  *

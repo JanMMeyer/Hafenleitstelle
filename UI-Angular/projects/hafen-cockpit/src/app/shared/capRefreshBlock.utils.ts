@@ -4,6 +4,8 @@ import { filter, timer } from 'rxjs';
 import { HTTP_RETRY_CONFIG } from '../core/errorHandling/errorRetry.interceptor';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
+// Reusable cross-cutting abstraction:
+// capRefreshBlock / getCappedRefreshBlockSignal centralize refresh-block behavior
 export type BlockRefreshUntilParams = {
 	isLoading$: Observable<boolean>;
 	refreshBlocked: WritableSignal<boolean>;

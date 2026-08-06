@@ -2,6 +2,9 @@ import { inject } from '@angular/core';
 import { ErrorLoggingService } from '../errorHandling/errorLogging.service';
 import { Serializable } from '../types/Basic.type';
 
+// DIP violation: LocalStorageAccessor is created by the caller, not by the framework.
+// A better solution would be a singleton factory service that can be provided via DI
+// that in turn creates the LocalStorageAccessor instances and registers the used key.
 export class LocalStorageAccessor<T extends Serializable> {
 	public static readonly useUniqueStorageKeys: Set<string> = new Set();
 
@@ -15,6 +18,10 @@ export class LocalStorageAccessor<T extends Serializable> {
 		LocalStorageAccessor.useUniqueStorageKeys.add(uniqueStorageKey);
 	}
 
+	// catching error here and showing an alert is technically an SRP violation,
+	// but makes sure it is handled, since it might be overlooked that this can throw
+	// unlike load(), any returned error object could simply be ignored.
+	// This is why save and load handle error catching and showing of alerts
 	save(value: T): void {
 		try {
 			const jsonValue = JSON.stringify(value);
@@ -38,7 +45,7 @@ export class LocalStorageAccessor<T extends Serializable> {
 				error instanceof Error ? error : new TypeError('Caught not an Error', { cause: error });
 			this.errorLoggingService.logError(loggableError);
 			alert(
-				'Error saving to local storage. You can continue, but settings will be lost when leaving or refreshing the page.',
+				'Error loading from local storage. You can continue, but settings will be lost when leaving or refreshing the page.',
 			);
 			return loggableError;
 		}

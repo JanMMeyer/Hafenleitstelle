@@ -6,6 +6,8 @@ import { environment } from '@cockpit/environments';
 import { Observable, tap } from 'rxjs';
 import { isWeatherDataDto, WeatherDataDto } from './WeatherData.dto';
 
+// Fail-fast construction: URL validity is checked early in services,
+// preventing hidden runtime drift
 const maxDistanceFromLocation: number = 10000;
 
 // TODO use ng-openapi gen with https://api.brightsky.dev/openapi.json

@@ -100,7 +100,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 	`,
 })
 export class PegelWidget extends Widget {
-	private readonly destroyRef = inject(DestroyRef);
 	private readonly pegelChart: Signal<BaseChartDirective | undefined> =
 		// viewChild<BaseChartDirective>('[baseChart]');
 		viewChild(BaseChartDirective);

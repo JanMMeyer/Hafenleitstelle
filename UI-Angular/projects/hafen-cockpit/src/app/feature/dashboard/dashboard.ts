@@ -102,7 +102,8 @@ export class Dashboard {
 			throw new Error('widgetGridComponent.grid undefined');
 		}
 
-		// This is the correct way to load the grid layout from local storage, but should have a explicit type, so the wrong undefined check might have been noticed.
+		// This is the correct way to load the grid layout from local storage,
+		// but should have a explicit type, so the wrong undefined check might have been noticed.
 		// const localStorageGridStackWidgets = this.localStorageAccessor.load();
 
 		// if local storage is empty, its null not undefined, this was the bug that caused the error message on initial load page

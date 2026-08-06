@@ -7,6 +7,8 @@ import { AsyncDataSource } from '@cockpit/app/core/types/AsyncDataSource.type';
 import { WithError } from '@cockpit/app/core/types/WithError.type';
 import { BehaviorSubject, catchError, Observable, of, Subject, switchMap, take, tap } from 'rxjs';
 
+// Open/Closed: AsyncDataSourceService is open for extension via fetchData()
+// and closed for modification of the loading/error orchestration logic
 @Injectable()
 export abstract class AsyncDataSourceService<
 	TData extends object,

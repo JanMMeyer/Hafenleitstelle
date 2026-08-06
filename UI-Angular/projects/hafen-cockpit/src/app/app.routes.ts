@@ -3,11 +3,11 @@ import { Dashboard } from './feature/dashboard/dashboard';
 
 export const routes: Routes = [
 	{
-		path: '**',
-		redirectTo: 'dashboard',
-	},
-	{
 		path: 'dashboard',
 		component: Dashboard,
+	},
+	{
+		path: '**',
+		redirectTo: 'dashboard',
 	},
 ];
